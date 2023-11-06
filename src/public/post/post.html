@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>우리동네 대동 단결 -포스팅 페이지-</title>
+    <link
+      rel="stylesheet"
+      href="./post.css"
+    />
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="title-select">
+        <img
+          id="logo"
+          src="../assets/images/logo.png"
+        />
+        <p id="title">우리동네 대동 단결</p>
+        <select id="pop-list">
+          <option value="1">성복동</option>
+          <option value="2">상현동</option>
+          <option value="3">풍덕천동</option>
+          <option value="4">신봉동</option>
+          <option value="5">죽전동</option>
+          <option value="6">동천동</option>
+          <option value="7">고기동</option>
+        </select>
+      </div>
+      <div style="display: flex; flex-direction: row; gap: 1rem">
+        <button id="login-btn">로그인</button>
+        <button id="my-info-btn">내 정보</button>
+        <button id="my-home-btn">홈으로</button>
+      </div>
+    </header>
+    <main id="free-main">
+      <header id="free-header">
+        <nav>
+          <button id="free-nav">자유게시판</button>
+          <button id="trade-nav">중고거래</button>
+
+          <button id="event-nav">이벤트</button>
+        </nav>
+      </header>
+      <section id="search-and-post-section">
+        <form id="search-form">
+          <select id="search-selection">
+            <option value="1">제목 + 내용</option>
+            <option value="2">작성자</option>
+          </select>
+          <input
+            id="search-input"
+            type="text"
+          />
+          <button
+            id="search-btn"
+            type="submit"
+          >
+            검색
+          </button>
+        </form>
+        <button
+          id="upload-post-btn"
+          type="button"
+        >
+          글쓰기
+        </button>
+      </section>
+      <ul id="post-list-container"></ul>
+      <footer id="pagination-footer">
+        <button id="previous-page-btn"><</button>
+        <p id="cur-page-number">1</p>
+        <button id="next-page-btn">></button>
+      </footer>
+    </main>
+  </body>
+  <script>
+    const freeNavBtn = document.getElementById("free-nav");
+    const tradeNavBtn = document.getElementById("trade-nav");
+    const eventNavBtn = document.getElementById("event-nav");
+
+    freeNavBtn.addEventListener("click", () => {
+      const area = new URLSearchParams(window.location.search).get("area");
+      location.href = `./post.html?category=1&area=${area}`;
+    });
+
+    tradeNavBtn.addEventListener("click", () => {
+      const area = new URLSearchParams(window.location.search).get("area");
+      location.href = `./post.html?category=2&area=${area}`;
+    });
+
+    eventNavBtn.addEventListener("click", () => {
+      const area = new URLSearchParams(window.location.search).get("area");
+      location.href = `./post.html?category=3&area=${area}`;
+    });
+
+    var page = 1;
+    const homeBtn = document.getElementById("my-home-btn");
+    homeBtn.addEventListener("click", () => {
+      location.href = "../index.html";
+    });
+
+    const uploadPostBtn = document.getElementById("upload-post-btn");
+    uploadPostBtn.addEventListener("click", () => {
+      if (!localStorage.getItem("id")) {
+        alert("로그인 후 이용해 주세요.");
+        return;
+      }
+      const category = new URLSearchParams(window.location.search).get(
+        "category"
+      );
+      const area = new URLSearchParams(window.location.search).get("area");
+      location.href = `../post/upload.html?category=${category}&area=${area}`;
+    });
+
+    const email = localStorage.getItem("id");
+
+    if (email) {
+      document.getElementById("login-btn").style.display = "none";
+      document.getElementById("my-info-btn").style.display = "block";
+    } else {
+      document.getElementById("login-btn").style.display = "block";
+      document.getElementById("my-info-btn").style.display = "none";
+    }
+
+    const category = new URLSearchParams(window.location.search).get(
+      "category"
+    );
+
+    if (category === "1") {
+      document.getElementById("free-nav").style.color = "black";
+      document.getElementById("trade-nav").style.color = "gray";
+      document.getElementById("event-nav").style.color = "gray";
+    } else if (category === "2") {
+      document.getElementById("free-nav").style.color = "gray";
+      document.getElementById("trade-nav").style.color = "black";
+      document.getElementById("event-nav").style.color = "gray";
+    } else if (category === "3") {
+      document.getElementById("free-nav").style.color = "gray";
+      document.getElementById("trade-nav").style.color = "gray";
+      document.getElementById("event-nav").style.color = "black";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const area = new URLSearchParams(window.location.search).get("area");
+      if (area) {
+        popList.value = area;
+      }
+    });
+
+    // 헤더 지역 변경시 area값 변경
+    const popList = document.querySelector("#pop-list");
+
+    popList.addEventListener("change", (e) => {
+      const area = popList.value;
+      location.href = `./post.html?category=${category}&area=${area}`;
+    });
+
+    // TODO: 검색 기능 구현
+    const searchForm = document.querySelector("#search-form");
+    const searchInput = document.querySelector("#search-input");
+    const searchBtn = document.querySelector("#search-btn");
+
+    searchForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const searchValue = searchInput.value;
+      const searchSelection =
+        document.querySelector("#search-selection").value ?? "1";
+      const area = new URLSearchParams(window.location.search).get("area");
+      const res = await fetch(
+        `http://dongnaecomm.cafe24app.com/api/post/search?keyword=${searchValue}&method=${searchSelection}&category=${category}&area=${area}`
+      );
+      const data = await res.json();
+      addPostListToContainer(data);
+    });
+
+    // TODO: 글작성 버튼 클릭시 클 작성 페이지로 이동
+
+    // TODO: 글 목록 페이지당 6개씩만 불러오기 및 페이지 네이션 구현
+    const postListContainer = document.querySelector("#post-list-container");
+    const previousPageBtn = document.querySelector("#previous-page-btn");
+    const nextPageBtn = document.querySelector("#next-page-btn");
+    const curPageNumber = document.querySelector("#cur-page-number");
+
+    previousPageBtn.addEventListener("click", async () => {
+      if (page === 1) {
+        return;
+      }
+      page--;
+      curPageNumber.textContent = page;
+      const area = new URLSearchParams(window.location.search).get("area");
+      const res = await fetch(
+        `http://dongnaecomm.cafe24app.com/api/post/main?page=${page}&category=${category}&area=${area}`
+      );
+      const data = await res.json();
+      addPostListToContainer(data);
+    });
+
+    nextPageBtn.addEventListener("click", async () => {
+      page++;
+      curPageNumber.textContent = page;
+      const area = new URLSearchParams(window.location.search).get("area");
+      const res = await fetch(
+        `http://dongnaecomm.cafe24app.com/api/post/main?page=${page}&category=${category}&area=${area}`
+      );
+      const data = await res.json();
+      addPostListToContainer(data);
+    });
+
+    async function getPost() {
+      const area = new URLSearchParams(window.location.search).get("area");
+      const res = await fetch(
+        `http://dongnaecomm.cafe24app.com/api/post/main?page=${page}&category=${category}&area=${area}`
+      );
+      const data = await res.json();
+      addPostListToContainer(data);
+    }
+
+    function addPostListToContainer(data) {
+      postListContainer.innerHTML = "";
+      data.forEach((post) => {
+        const postContainer = document.createElement("a");
+        postContainer.classList.add("post-container");
+        postContainer.href = `./detail.html?id=${post.post_id}`;
+        const postOutline = document.createElement("div");
+        postOutline.classList.add("post-outline");
+        const postTitle = document.createElement("p");
+        postTitle.classList.add("post-title");
+        postTitle.textContent = post.title;
+        const postOwner = document.createElement("p");
+        postOwner.classList.add("post-owner");
+        postOwner.textContent = post.nickname;
+        postOutline.appendChild(postTitle);
+        postOutline.appendChild(postOwner);
+        const postContent = document.createElement("p");
+        postContent.classList.add("post-content");
+        postContent.textContent = post.content;
+        const postCountList = document.createElement("footer");
+        postCountList.classList.add("post-count-list");
+        const postRecommendCount = document.createElement("p");
+        postRecommendCount.textContent = `추천수: ${post.favorite_count}`;
+        const postViewCount = document.createElement("p");
+        postViewCount.textContent = `조회수: ${post.view_count}`;
+        const postCommentCount = document.createElement("p");
+        postCommentCount.textContent = `댓글수: ${post.comment_count}`;
+        postCountList.appendChild(postRecommendCount);
+        postCountList.appendChild(postViewCount);
+        postCountList.appendChild(postCommentCount);
+        postContainer.appendChild(postOutline);
+        postContainer.appendChild(postContent);
+        postContainer.appendChild(postCountList);
+        postListContainer.appendChild(postContainer);
+      });
+    }
+    getPost();
+  </script>
+</html>

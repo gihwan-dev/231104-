@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>change password</title>
+    <link
+      rel="stylesheet"
+      href="./changepw.css"
+    />
+  </head>
+  <body>
+    <main id="main-container">
+      <header id="change-pw-header">
+        <img src="../assets/images/logo.png" />
+        <h1>
+          <a href="http://dongnaecomm.cafe24app.com">우리 동네 대동단결</a>
+        </h1>
+      </header>
+      <section id="change-pw-form">
+        <h2>비밀번호 변경하기</h2>
+        <form id="change-pw-form-field">
+          <input
+            placeholder="비밀번호를 입력해주세요."
+            type="password"
+          />
+          <input
+            placeholder="비밀번호를 한번 더 입력해 주세요."
+            type="password"
+          />
+          <button type="submit">변경하기</button>
+          <a
+            id="change-pw-link"
+            href="./login.html"
+            >로그인하러 가기</a
+          >
+        </form>
+      </section>
+    </main>
+  </body>
+  <script>
+    const changePwForm = document.querySelector("#change-pw-form-field");
+    changePwForm.addEventListener("submit", async (e) => {
+      try {
+        e.preventDefault();
+        const password = changePwForm.querySelector(
+          "input[type=password]"
+        ).value;
+        const passwordCheck = changePwForm.querySelector(
+          "input[type=password]"
+        ).value;
+        if (password !== passwordCheck) {
+          alert("비밀번호가 일치하지 않습니다.");
+          return;
+        }
+        const email = new URLSearchParams(location.search).get("email");
+        console.log(email);
+        const result = await fetch(
+          "http://dongnaecomm.cafe24app.com/api/user/changepw",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ password, email }),
+          }
+        );
+        const data = await result.json();
+        if (result.ok) {
+          if (data.isValid) {
+            alert("비밀번호 변경에 성공했습니다.");
+            location.href = "./login.html";
+          } else {
+            alert("비밀번호 변경에 실패했습니다.");
+          }
+        } else {
+          alert("비밀번호 변경에 실패했습니다.");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  </script>
+</html>

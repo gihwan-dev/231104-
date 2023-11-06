@@ -1,0 +1,173 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#main-header {
+  background-color: #e7e7e7;
+  padding: 1rem 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#title {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+#list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+#pop-list {
+  list-style: none;
+}
+
+#title-select {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
+
+#login-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+#my-info-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+#logo {
+  width: 3rem;
+  height: 3rem;
+}
+
+#free-main {
+  padding: 2rem;
+}
+
+#free-header>h1 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-bottom: 1px solid #e7e7e7;
+  padding: 1rem 0;
+}
+
+#free-header>nav {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+#free-header>nav>button {
+  padding: 0.5rem;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  background-color: transparent;
+}
+
+#free-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#search-and-post-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #e7e7e7;
+  border-bottom: 1px solid #e7e7e7;
+  padding: 0.5rem 0;
+}
+
+#upload-post-btn {
+  padding: 0.25rem 1rem;
+  cursor: pointer;
+  border: none;
+  background-color: #ff007f;
+  color: white;
+  font-weight: bold;
+}
+
+#post-list-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  list-style: none;
+}
+
+.post-container {
+  border: 1px solid #e7e7e7;
+  padding: 1rem;
+  text-decoration: none;
+  color: black;
+}
+
+.post-title {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.post-owner {
+  font-size: 0.875rem;
+  color: #666666;
+}
+
+.post-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.post-count-list {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+#pagination-footer {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1rem 0;
+}
+
+#pagination-footer>button {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+#my-home-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+  text-decoration: none;
+  color: black;
+  border: 1px solid black;
+}

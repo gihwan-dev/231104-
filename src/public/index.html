@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <link
+      rel="stylesheet"
+      href="style.css"
+    />
+    <title>우리동네 대동 단결 -메인 페이지-</title>
+    <script
+      type="text/javascript"
+      src="https://static.nid.naver.com/js/naverLogin_implicit-1.0.3.js"
+      charset="utf-8"
+    ></script>
+    <script
+      type="text/javascript"
+      src="http://code.jquery.com/jquery-1.11.3.min.js"
+    ></script>
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="title-select">
+        <img
+          id="logo"
+          src="./assets/images/logo.png"
+        />
+        <p id="title">우리동네 대동 단결</p>
+        <select id="pop-list">
+          <option value="1">성복동</option>
+          <option value="2">상현동</option>
+          <option value="3">풍덕천동</option>
+          <option value="4">신봉동</option>
+          <option value="5">죽전동</option>
+          <option value="6">동천동</option>
+          <option value="7">고기동</option>
+        </select>
+      </div>
+      <button id="login-btn">로그인</button>
+      <div
+        id="login-info-container"
+        style="
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 1rem;
+        "
+      >
+        <button id="my-info-btn">내 정보</button>
+        <button id="logout-btn">로그아웃</button>
+      </div>
+    </header>
+    <main id="main-container">
+      <section
+        id="top-section"
+        class="list-container"
+      >
+        <header>
+          <p>자유게시판</p>
+          <button id="free-more-btn">더보기 ></button>
+        </header>
+        <ul id="free-post-container"></ul>
+      </section>
+      <section id="bottom-section">
+        <div
+          id="trade-section"
+          class="list-container"
+        >
+          <header>
+            <p>중고거래</p>
+            <button id="trade-more-btn">더보기 ></button>
+          </header>
+          <ul id="trade-post-container"></ul>
+        </div>
+        <div
+          id="event-section"
+          class="list-container"
+        >
+          <header>
+            <p>이벤트</p>
+            <button id="event-more-btn">더보기 ></button>
+          </header>
+          <ul id="event-post-container"></ul>
+        </div>
+      </section>
+    </main>
+  </body>
+  <script type="text/javascript">
+    var naver_id_login = new naver_id_login(
+      "8KXeg4eZHdnZEfoBjghJ",
+      "http://dongnaecomm.cafe24app.com/"
+    );
+
+    if (
+      naver_id_login?.oauthParams?.access_token ||
+      window.localStorage.getItem("id")
+    ) {
+      const loginBtn = document.querySelector("#login-btn");
+      loginBtn.style.display = "none";
+      const myInfoBtn = document.querySelector("#my-info-btn");
+      myInfoBtn.style.display = "block";
+      const logoutBtn = document.querySelector("#logout-btn");
+      logoutBtn.style.display = "block";
+    } else {
+      const loginInfoContainer = document.querySelector(
+        "#login-info-container"
+      );
+      loginInfoContainer.style.display = "none";
+      const loginBtn = document.querySelector("#login-btn");
+      loginBtn.style.display = "block";
+    }
+    // 네이버 사용자 프로필 조회
+    naver_id_login?.get_naver_userprofile("naverSignInCallback()");
+    // 네이버 사용자 프로필 조회 이후 프로필 정보를 처리할 callback function
+    async function naverSignInCallback() {
+      // naver_id_login.getProfileData('프로필항목명');
+      // 프로필 항목은 개발가이드를 참고하시기 바랍니다.
+      // alert("email = " + naver_id_login.getProfileData("email"));
+      // alert("nickname = " + naver_id_login.getProfileData("nickname"));
+      // alert("age = " + naver_id_login.getProfileData("age"));
+      if (window.localStorage.getItem("id")) {
+        return;
+      }
+      const result = await fetch(`http://dongnaecomm.cafe24app.com/api/user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: naver_id_login.getProfileData("email"),
+          nickname: naver_id_login.getProfileData("nickname"),
+          name: naver_id_login.getProfileData("name"),
+        }),
+      });
+      const data = await result.json();
+      if (
+        !window.localStorage.setItem(
+          "id",
+          naver_id_login.getProfileData("email")
+        )
+      ) {
+        window.localStorage.setItem(
+          "id",
+          naver_id_login.getProfileData("email")
+        );
+      }
+    }
+
+    // 네이버 사용자 프로필 조회
+    naver_id_login.get_naver_userprofile("naverSignInCallback()");
+  </script>
+</html>
+
+<script type="module">
+  const area = new URLSearchParams(location.search).get("area");
+  if (!area) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("area", 1);
+    window.history.pushState({}, "", url);
+  }
+  const logoutBtn = document.querySelector("#logout-btn");
+  logoutBtn.addEventListener("click", () => {
+    window.localStorage.removeItem("id");
+    location.href = "http://dongnaecomm.cafe24app.com/";
+  });
+
+  // 더보기 누르면 해당 게시판으로 현재 서치 파라티어 area 가진채로 이동
+  const freeMoreBtn = document.querySelector("#free-more-btn");
+  // 더보기 눌러서 이동하면 주소에 area 파라미터는 현재 가진거 그대로에 category 파라미터 추가되어서 이동해야함
+  freeMoreBtn.addEventListener("click", () => {
+    const url = new URL(window.location.href);
+    const area = url.searchParams.get("area");
+    url.searchParams.set("category", 1);
+    window.location.href = `./post/post.html?category=${1}&area=${area}`;
+  });
+
+  const tradeMoreBtn = document.querySelector("#trade-more-btn");
+  tradeMoreBtn.addEventListener("click", () => {
+    const url = new URL(window.location.href);
+    const area = url.searchParams.get("area");
+    url.searchParams.set("category", 2);
+    window.location.href = `./post/post.html?category=${2}&area=${area}`;
+  });
+
+  const eventMoreBtn = document.querySelector("#event-more-btn");
+  eventMoreBtn.addEventListener("click", () => {
+    const url = new URL(window.location.href);
+    const area = url.searchParams.get("area");
+    url.searchParams.set("category", 3);
+    window.location.href = `./post/post.html?category=${3}&area=${area}`;
+  });
+
+  const popList = document.querySelector("#pop-list");
+  popList.addEventListener("change", async (e) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("area", e.target.value);
+    window.history.pushState({}, "", url);
+    await getPost();
+  });
+
+  const loginBtn = document.querySelector("#login-btn");
+  loginBtn.addEventListener("click", () => {
+    window.location.href = "./auth/login.html";
+  });
+
+  const myInfoBtn = document.querySelector("#my-info-btn");
+  myInfoBtn.addEventListener("click", () => {
+    window.location.href = "./info/info.html";
+  });
+
+  // area 값 없으면 1로 설정
+  getPost();
+
+  async function getPost() {
+    const url = new URL(window.location.href);
+    const area = url.searchParams.get("area");
+    const category = url.searchParams.get("category");
+    const result = await fetch(
+      `http://dongnaecomm.cafe24app.com/api/post?area=${area}`
+    );
+    const data = await result.json();
+    addPostListToContainer(data);
+  }
+
+  function addPostListToContainer(data) {
+    const freePostContainer = document.querySelector("#free-post-container");
+    const tradePostContainer = document.querySelector("#trade-post-container");
+    const eventPostContainer = document.querySelector("#event-post-container");
+
+    freePostContainer.innerHTML = "";
+    tradePostContainer.innerHTML = "";
+    eventPostContainer.innerHTML = "";
+    data.forEach((item) => {
+      if (item.category === 1) {
+        // 자유 게시판
+        const freePostContainer = document.querySelector(
+          "#free-post-container"
+        );
+        const li = document.createElement("li");
+        li.addEventListener("click", () => {
+          location.href = `./post/detail.html?id=${item.post_id}`;
+        });
+        li.classList.add("post-list");
+        const p = document.createElement("p");
+        p.textContent = item.title;
+        const div = document.createElement("div");
+
+        const span1 = document.createElement("span");
+        span1.textContent = "추천: " + item.favorite_count;
+        const span2 = document.createElement("span");
+        span2.textContent = "댓글: " + item.comment_count;
+        const span3 = document.createElement("span");
+        span3.textContent = "조회: " + item.view_count;
+
+        div.appendChild(span1);
+        div.appendChild(span2);
+        div.appendChild(span3);
+
+        li.appendChild(p);
+        li.appendChild(div);
+
+        freePostContainer.appendChild(li);
+      } else if (item.category === 2) {
+        // 중고
+        const tradePostContainer = document.querySelector(
+          "#trade-post-container"
+        );
+        const li = document.createElement("li");
+        li.addEventListener("click", () => {
+          location.href = `./post/detail.html?id=${item.post_id}`;
+        });
+        li.classList.add("post-list");
+        const p = document.createElement("p");
+        p.textContent = item.title;
+        const div = document.createElement("div");
+
+        const span1 = document.createElement("span");
+        span1.textContent = "추천: " + item.favorite_count;
+        const span2 = document.createElement("span");
+        span2.textContent = "댓글: " + item.comment_count;
+        const span3 = document.createElement("span");
+        span3.textContent = "조회: " + item.view_count;
+
+        div.appendChild(span1);
+        div.appendChild(span2);
+        div.appendChild(span3);
+
+        li.appendChild(p);
+        li.appendChild(div);
+
+        tradePostContainer.appendChild(li);
+      } else if (item.category === 3) {
+        // 이벤트 게시판
+        const eventPostContainer = document.querySelector(
+          "#event-post-container"
+        );
+        const li = document.createElement("li");
+        li.addEventListener("click", () => {
+          location.href = `./post/detail.html?id=${item.post_id}`;
+        });
+        li.classList.add("post-list");
+        const p = document.createElement("p");
+        p.textContent = item.title;
+        const div = document.createElement("div");
+
+        const span1 = document.createElement("span");
+        span1.textContent = "추천: " + item.favorite_count;
+        const span2 = document.createElement("span");
+        span2.textContent = "댓글: " + item.comment_count;
+        const span3 = document.createElement("span");
+        span3.textContent = "조회: " + item.view_count;
+
+        div.appendChild(span1);
+        div.appendChild(span2);
+        div.appendChild(span3);
+
+        li.appendChild(p);
+        li.appendChild(div);
+
+        eventPostContainer.appendChild(li);
+      }
+    });
+  }
+</script>

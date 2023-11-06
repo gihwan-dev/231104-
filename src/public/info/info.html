@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>My info page</title>
+    <link
+      rel="stylesheet"
+      href="info.css"
+    />
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="title-select">
+        <img
+          id="logo"
+          src="../assets/images/logo.png"
+        />
+        <p id="title">우리동네 대동 단결</p>
+        <select id="pop-list">
+          <option value="성복동">성복동</option>
+          <option value="상현동">상현동</option>
+          <option value="풍덕천동">풍덕천동</option>
+          <option value="신봉동">신봉동</option>
+          <option value="죽전동">죽전동</option>
+          <option value="동천동">동천동</option>
+          <option value="고기동">고기동</option>
+        </select>
+      </div>
+      <button id="home-btn">홈으로</button>
+    </header>
+    <main id="info-main">
+      <h2 id="info-title">내 정보</h2>
+      <form id="check-pw-container">
+        <label>정보 확인을 위해 비밀번호를 입력해 주세요:</label>
+        <input type="password" />
+        <button>확인</button>
+      </form>
+      <section id="user-info-container">
+        <div id="user-name"></div>
+        <div id="user-nickname"></div>
+        <div id="user-email"></div>
+        <div id="user-address-container">
+          <div id="user-address"></div>
+          <a
+            id="add-address-btn"
+            href="../auth/check-address.html"
+            >인증하기</a
+          >
+        </div>
+      </section>
+      <section id="user-post-container">
+        <h2>내가 쓴 글</h2>
+        <ul id="user-post-list"></ul>
+      </section>
+    </main>
+  </body>
+  <script type="text/javascript">
+    function getArea(value) {
+      switch (value) {
+        case 0:
+          return null;
+        case 1:
+          return "성복동";
+        case 2:
+          return "상현동";
+        case 3:
+          return "풍덕천동";
+        case 4:
+          return "신봉동";
+        case 5:
+          return "죽전동";
+        case 6:
+          return "동천동";
+        case 7:
+          return "고기동";
+      }
+    }
+    const homeBtn = document.querySelector("#home-btn");
+    homeBtn.addEventListener("click", () => {
+      location.href = "/";
+    });
+    const checkPwContainer = document.querySelector("#check-pw-container");
+    const userContainer = document.querySelector("#user-info-container");
+
+    checkPwContainer.addEventListener("submit", async (e) => {
+      try {
+        e.preventDefault();
+        const password = checkPwContainer.querySelector(
+          "input[type=password]"
+        ).value;
+        const email = localStorage.getItem("id");
+        const result = await fetch(
+          "http://dongnaecomm.cafe24app.com/api/user/checkpw",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ password, email }),
+          }
+        );
+        const data = await result.json();
+        if (data.isValid) {
+          userContainer.style.display = "block";
+          checkPwContainer.style.display = "none";
+
+          const userName = document.querySelector("#user-name");
+          const userNickname = document.querySelector("#user-nickname");
+          const userEmail = document.querySelector("#user-email");
+          const userAddress = document.querySelector("#user-address");
+          const userPostList = document.querySelector("#user-post-list");
+          const userPostContainer = document.querySelector(
+            "#user-post-container"
+          );
+
+          userName.textContent = `이름: ${data.name}`;
+          userNickname.textContent = `닉네임: ${data.nickname}`;
+          userEmail.textContent = `이메일: ${data.email}`;
+
+          userPostContainer.style.visibility = "visible";
+
+          data?.posts?.forEach((post) => {
+            const li = document.createElement("li");
+            const a = document.createElement("a");
+            a.href = `../post/detail.html?id=${post.post_id}`;
+            a.textContent = post.title;
+            li.appendChild(a);
+            userPostList.appendChild(li);
+          });
+
+          const address = getArea(Number(data.address));
+
+          if (!address) {
+            userAddress.textContent = `주소: 인증되지 않은 사용자입니다.`;
+            const addAddressBtn = document.querySelector("#add-address-btn");
+            addAddressBtn.style.display = "block";
+            return;
+          } else {
+            const addAddressBtn = document.querySelector("#add-address-btn");
+            addAddressBtn.style.display = "none";
+          }
+          userAddress.textContent = `주소: ${address}`;
+        } else {
+          alert("비밀번호가 일치하지 않습니다.");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  </script>
+</html>

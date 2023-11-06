@@ -1,0 +1,366 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#main-header {
+  background-color: #e7e7e7;
+  padding: 1rem 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#title {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+#list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+#pop-list {
+  list-style: none;
+}
+
+#title-select {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
+
+#login-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+#my-info-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+#logo {
+  width: 3rem;
+  height: 3rem;
+}
+
+#my-home-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+#main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+#post-container {
+  width: 100vw;
+  max-width: 50rem;
+
+}
+
+#post-top-banner {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+#post-info {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: #828282;
+}
+
+#manifulate-btn>button {
+  padding: 0.5rem;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+}
+
+#post-container {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#favorite-btn {
+  align-self: center;
+  padding: 0.5rem;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  background-color: #ff007f;
+  color: white;
+  font-weight: bold;
+  border-radius: 0.5rem;
+}
+
+#comment-form {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
+
+#comment-input {
+  flex: 1 0 0;
+  padding: 0.5rem;
+  ;
+}
+
+#comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.5rem;
+  list-style: none;
+}
+
+#comment-list>li {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+#comment-nickname {
+  font-weight: bold;
+  color: #85b8ff;
+}
+
+#comment-content {
+  flex: 1 0 0;
+}
+
+#comment-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+  border: none;
+  background-color: #828282;
+  color: white;
+  font-weight: bold;
+  border-radius: 0.5rem;
+}
+
+#go-back-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+  border: none;
+  background-color: #828282;
+  color: white;
+  font-weight: bold;
+  border-radius: 0.5rem;
+}
+
+#edit-comment-modal {
+  display: none;
+}
+
+#delete-modal {
+  display: none;
+}
+
+#edit-post-modal {
+  display: none;
+  background-color: white;
+  padding: 1.5rem;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid #e7e7e7;
+  border-radius: 0.5rem;
+}
+
+#edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#edit-cancle-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+  border: none;
+  background-color: #828282;
+  color: white;
+  font-weight: bold;
+  border-radius: 0.5rem;
+}
+
+#edit-submit-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+  border: none;
+  background-color: #ff007f;
+  color: white;
+  font-weight: bold;
+  border-radius: 0.5rem;
+}
+
+#edit-title-input {
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: 0.25rem 0.5rem;
+}
+
+#edit-content {
+  padding: 0.5rem;
+}
+
+.comment-delete-btn {
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  color: red;
+  font-weight: bold;
+  border-radius: 0.5rem;
+}
+
+#delete-modal {
+  display: none;
+  background-color: white;
+  padding: 1.5rem;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid #e7e7e7;
+  border-radius: 0.5rem;
+}
+
+#delete-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#delete-modal-btn-list {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+#delete-modal-confirm-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+  border: none;
+  background-color: #ff007f;
+  color: white;
+  font-weight: bold;
+  border-radius: 0.5rem;
+}
+
+#delete-modal-cancel-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+  border: none;
+  background-color: #828282;
+  color: white;
+  font-weight: bold;
+  border-radius: 0.5rem;
+}
+
+#open-chat-btn {
+  width: fit-content;
+  padding: 0.5rem;
+  cursor: pointer;
+  border: none;
+  background-color: #e7e7e7;
+  color: black;
+  font-weight: bold;
+  border-radius: 0.5rem;
+  align-self: center;
+}
+
+#chat-list {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 1px solid #e7e7e7;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  width: 30rem;
+  max-height: 30rem;
+  overflow-y: scroll;
+}
+
+#chat-items {
+  list-style: none;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border: 1px solid #e7e7e7;
+}
+
+#chat-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#chat-footer>div {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+#chat-close-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+  border: none;
+  background-color: #828282;
+  color: white;
+  font-weight: bold;
+  border-radius: 0.5rem;
+}
+
+#chat-send-btn {
+  padding: 0.5rem;
+  cursor: pointer;
+  border: none;
+  background-color: #ff007f;
+  color: white;
+  font-weight: bold;
+  border-radius: 0.5rem;
+}
+
+#chat-input {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+}

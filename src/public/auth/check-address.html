@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>check address</title>
+    <link
+      rel="stylesheet"
+      href="./check-address.css"
+    />
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="title-select">
+        <img
+          id="logo"
+          src="../assets/images/logo.png"
+        />
+        <p id="title">우리동네 대동 단결</p>
+        <select id="pop-list">
+          <option value="성복동">성복동</option>
+          <option value="상현동">상현동</option>
+          <option value="풍덕천동">풍덕천동</option>
+          <option value="신봉동">신봉동</option>
+          <option value="죽전동">죽전동</option>
+          <option value="동천동">동천동</option>
+          <option value="고기동">고기동</option>
+        </select>
+      </div>
+      <a
+        id="home-btn"
+        href="../info/info.html"
+        >내 정보</a
+      >
+    </header>
+    <section id="main-section">
+      <form id="main-form">
+        <h1 id="image-title">주소 인증 하기</h1>
+        <label id="image-label">
+          <span id="image-container">신분증 사진을 업로드해 주세요.</span>
+          <input
+            id="image-input"
+            type="file"
+          />
+        </label>
+        <button id="send-btn">전송</button>
+        <div id="send-result-container"></div>
+      </form>
+    </section>
+  </body>
+  <script>
+    const form = document.querySelector("#main-form");
+    const imageInput = document.querySelector("#image-input");
+
+    imageInput.addEventListener("change", (e) => {
+      const imageContainer = document.querySelector("#image-container");
+
+      // 업로드된 이미지 파일 보여주기
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.width = 300;
+        img.height = 200;
+        imageContainer.appendChild(img);
+      };
+      reader.readAsDataURL(e.target.files[0]);
+      imageContainer.innerHTML = "";
+    });
+
+    form.addEventListener("submit", async (e) => {
+      try {
+        e.preventDefault();
+
+        // 파일 확장자 .jpeg인지 확인
+        if (imageInput.files[0].type !== "image/jpeg") {
+          alert("jpeg 파일만 업로드 가능합니다.");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.readAsDataURL(imageInput.files[0]);
+        reader.onloadend = async () => {
+          const base64Image = reader.result;
+          const result = await fetch(
+            "http://dongnaecomm.cafe24app.com/api/user/image",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                image: base64Image,
+                email: localStorage.getItem("id"),
+              }),
+            }
+          );
+
+          if (!result.ok) {
+            throw new Error("Network response was not ok.");
+          }
+          const data = await result.json();
+          if (data.isValid) {
+            alert("주소 인증에 성공했습니다.");
+            location.href = "../info/info.html";
+          } else {
+            alert("주소 인증에 실패했습니다.");
+          }
+        };
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  </script>
+</html>

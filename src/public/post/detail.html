@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>post detail page</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link
+      rel="stylesheet"
+      href="./detail.css"
+    />
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="title-select">
+        <img
+          id="logo"
+          src="../assets/images/logo.png"
+        />
+        <p id="title">우리동네 대동 단결</p>
+        <select id="pop-list">
+          <option value="1">성복동</option>
+          <option value="2">상현동</option>
+          <option value="3">풍덕천동</option>
+          <option value="4">신봉동</option>
+          <option value="5">죽전동</option>
+          <option value="6">동천동</option>
+          <option value="7">고기동</option>
+        </select>
+      </div>
+      <div style="display: flex; flex-direction: row; gap: 1rem">
+        <button id="go-back-btn">뒤로가기</button>
+        <button id="my-home-btn">홈으로</button>
+      </div>
+    </header>
+    <main id="main"></main>
+    <div id="chat-list">
+      <p>실시간 채팅</p>
+      <ul id="chat-items"></ul>
+      <footer id="chat-footer">
+        <input
+          placeholder="메시지를 입력하세요."
+          id="chat-input"
+          type="text"
+        />
+        <div>
+          <button id="chat-close-btn">닫기</button>
+          <button id="chat-send-btn">전송</button>
+        </div>
+      </footer>
+    </div>
+    <div id="edit-post-modal">
+      <div id="edit-modal-content">
+        <form id="edit-form">
+          <input
+            id="edit-title-input"
+            type="text"
+          />
+          <textarea
+            name="content"
+            id="edit-content"
+            cols="30"
+            rows="10"
+          ></textarea>
+          <button
+            type="button"
+            id="edit-cancle-btn"
+          >
+            취소
+          </button>
+          <button
+            type="submit"
+            id="edit-submit-btn"
+          >
+            수정
+          </button>
+        </form>
+      </div>
+    </div>
+    <div id="delete-modal">
+      <div id="delete-modal-content">
+        <p>정말로 삭제하시겠습니까?</p>
+        <div id="delete-modal-btn-list">
+          <button id="delete-modal-confirm-btn">확인</button>
+          <button id="delete-modal-cancel-btn">취소</button>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    const chatCloseBtn = document.querySelector("#chat-close-btn");
+    const chatList = document.querySelector("#chat-list");
+    const chatSendBtn = document.querySelector("#chat-send-btn");
+    const chatInput = document.querySelector("#chat-input");
+    const chatItems = document.querySelector("#chat-items");
+
+    chatCloseBtn.addEventListener("click", () => {
+      chatList.style.display = "none";
+    });
+
+    const socket = io("http://dongnaecomm.cafe24app.com");
+
+    const postId = new URLSearchParams(location.search).get("id");
+
+    socket.emit("joinRoom", postId);
+
+    socket.on("previousMessages", (messages) => {
+      messages.forEach((message) => {
+        addMessageToChatList(message);
+      });
+    });
+
+    // 메시지 수신
+    socket.on("receiveMessage", (message) => {
+      addMessageToChatList(message);
+    });
+
+    // 메시지 전송 함수
+    function sendMessage(content) {
+      const userEmail = localStorage.getItem("id"); // 사용자 닉네임 가져오기
+      if (!userEmail) {
+        alert("로그인이 필요한 기능입니다.");
+        return;
+      }
+      socket.emit("sendMessage", { postId, content, userEmail });
+    }
+
+    // 메시지를 채팅 리스트에 추가하는 함수
+    function addMessageToChatList(message) {
+      const li = document.createElement("li");
+      li.textContent = `${message.userNickName ?? message.user_nickname}: ${
+        message.content
+      }`;
+      chatItems.appendChild(li);
+    }
+
+    chatSendBtn.addEventListener("click", () => {
+      const content = chatInput.value;
+      sendMessage(content);
+      chatInput.value = "";
+    });
+
+    const goBackBtn = document.querySelector("#go-back-btn");
+    const myHomeBtn = document.querySelector("#my-home-btn");
+
+    goBackBtn.addEventListener("click", () => {
+      history.back();
+    });
+
+    myHomeBtn.addEventListener("click", () => {
+      location.href = "http://dongnaecomm.cafe24app.com/";
+    });
+
+    function getFormattedDate(date) {
+      const newDate = new Date(date);
+      const year = newDate.getFullYear();
+      const month = newDate.getMonth() + 1;
+      const day = newDate.getDate();
+      return `${year}년 ${month}월 ${day}일`;
+    }
+
+    // TODO: 게시글 상세 정보를 가져오는 함수를 구현
+    // TODO: 작성자 닉네임 필요, 댓글 필요,
+    async function getPostDetail() {
+      const postId = new URLSearchParams(location.search).get("id");
+      const response = await fetch(
+        `http://dongnaecomm.cafe24app.com/api/post/${postId}`
+      );
+      const data = await response.json();
+      const main = document.querySelector("#main");
+      const postDetail = document.createElement("div");
+      postDetail.innerHTML = `
+      <div id="post-container">
+        <div id="post-top-banner">
+          <div>
+            <h1 id="post-title">${data.post.title}</h1>
+          <div id="post-info">
+            <p id="post-owner">글쓴이: ${data.user.nick_name}</p>
+            <p>작성일자: ${getFormattedDate(data.post.reg_date)}</p>
+            <p>조회수: ${data.post.view_count}</p>
+          </div>
+          </div>
+          <div id="manifulate-btn">
+          ${
+            localStorage.getItem("id") === data.user.id
+              ? `
+          <button id="edit-btn">수정</button>
+          <button id="delete-btn">삭제</button>
+          `
+              : ""
+          }
+
+        </div>
+        </div>
+        <div id="post-container">
+          <p id="post-content">${data.post.content}</p>
+          <button id="favorite-btn">추천하기 ${
+            data.post.favorite_count
+          }</button>
+          <button id="open-chat-btn">실시간 채팅</button>
+        </div>
+        <section>
+          <h4>댓글</h4>
+          <form id="comment-form">
+            <input id="comment-input" type="text" />
+            <button type="submit" id="comment-btn">등록</button>
+          </form>
+          <ul id="comment-list">
+          </ul>
+        </section>
+      </div>
+      `;
+      main.appendChild(postDetail);
+
+      const chatList = document.querySelector("#chat-list");
+      const openChatBtn = document.querySelector("#open-chat-btn");
+
+      openChatBtn.addEventListener("click", () => {
+        chatList.style.display = "block";
+      });
+
+      const commentList = document.querySelector("#comment-list");
+
+      data.comments.forEach((comment) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <p id="comment-nickname">${comment.owner_nickname}</p>
+          <p id="comment-content">${comment.content}</p>
+          <div>
+            ${
+              localStorage.getItem("id") === comment.owner_Id
+                ? `
+              <button class="comment-delete-btn" id="comment-delete-btn-${comment.comment_id}">삭제</button>
+              `
+                : ""
+            }
+          <div>
+        `;
+        commentList.appendChild(li);
+        const commentDeleteBtn = document.querySelector(
+          `#comment-delete-btn-${comment.comment_id}`
+        );
+
+        commentDeleteBtn.addEventListener("click", async () => {
+          try {
+            const response = await fetch(
+              `http://dongnaecomm.cafe24app.com/api/post/${postId}/comment/${comment.comment_id}`,
+              {
+                method: "DELETE",
+              }
+            );
+            const data = await response.json();
+            if (data.success) {
+              location.reload();
+            }
+          } catch (error) {}
+        });
+      });
+    }
+    getPostDetail().then(() => {
+      const editBtn = document.querySelector("#edit-btn");
+      const deleteBtn = document.querySelector("#delete-btn");
+      const editPostModal = document.querySelector("#edit-post-modal");
+      const editModalContent = document.querySelector("#edit-modal-content");
+      const editForm = document.querySelector("#edit-form");
+      const editTitleInput = document.querySelector("#edit-title-input");
+      const editContent = document.querySelector("#edit-content");
+      const editCancleBtn = document.querySelector("#edit-cancle-btn");
+      const editSubmitBtn = document.querySelector("#edit-submit-btn");
+      const deleteModal = document.querySelector("#delete-modal");
+      const favoriteBtn = document.querySelector("#favorite-btn");
+
+      favoriteBtn.addEventListener("click", async () => {
+        try {
+          const postId = new URLSearchParams(location.search).get("id");
+          const response = await fetch(
+            `http://dongnaecomm.cafe24app.com/api/post/${postId}/favorite/count`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          const data = await response.json();
+          if (data.success) {
+            location.reload();
+          }
+        } catch (error) {}
+      });
+
+      const deleteModalContent = document.querySelector(
+        "#delete-modal-content"
+      );
+      const deleteModalConfirmBtn = document.querySelector(
+        "#delete-modal-confirm-btn"
+      );
+      const deleteModalCancelBtn = document.querySelector(
+        "#delete-modal-cancel-btn"
+      );
+
+      deleteModalCancelBtn &&
+        deleteModalCancelBtn.addEventListener("click", () => {
+          deleteModal.style.display = "none";
+        });
+
+      editCancleBtn &&
+        editCancleBtn.addEventListener("click", () => {
+          editPostModal.style.display = "none";
+        });
+
+      editBtn &&
+        editBtn.addEventListener("click", () => {
+          editPostModal.style.display = "flex";
+          editTitleInput.value =
+            document.querySelector("#post-title").textContent;
+          editContent.value =
+            document.querySelector("#post-content").textContent;
+        });
+
+      editPostModal &&
+        editPostModal.addEventListener("click", (e) => {
+          if (e.target === editPostModal) {
+            editPostModal.style.display = "none";
+          }
+        });
+
+      editForm &&
+        editForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          try {
+            const postId = new URLSearchParams(location.search).get("id");
+            const response = await fetch(
+              `http://dongnaecomm.cafe24app.com/api/post/${postId}`,
+              {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  title: editTitleInput.value,
+                  content: editContent.value,
+                }),
+              }
+            );
+            const data = await response.json();
+            if (data.success) {
+              location.reload();
+            }
+          } catch (error) {}
+        });
+
+      deleteBtn &&
+        deleteBtn.addEventListener("click", () => {
+          deleteModal.style.display = "block";
+        });
+
+      deleteModal &&
+        deleteModal.addEventListener("click", (e) => {
+          if (e.target === deleteModal) {
+            deleteModal.style.display = "none";
+          }
+        });
+
+      deleteModalConfirmBtn &&
+        deleteModalConfirmBtn.addEventListener("click", async () => {
+          try {
+            const postId = new URLSearchParams(location.search).get("id");
+            const response = await fetch(
+              `http://dongnaecomm.cafe24app.com/api/post/${postId}`,
+              {
+                method: "DELETE",
+              }
+            );
+            const data = await response.json();
+            if (data.success) {
+              location.href = `http://dongnaecomm.cafe24app.com/`;
+            }
+          } catch (error) {}
+        });
+
+      const commentForm = document.querySelector("#comment-form");
+      commentForm &&
+        commentForm?.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const commentInput = document.querySelector("#comment-input");
+          const email = localStorage.getItem("id");
+          if (!email) {
+            alert("로그인이 필요한 기능입니다.");
+            commentInput.value = "";
+            return;
+          }
+          try {
+            const postId = new URLSearchParams(location.search).get("id");
+            const response = await fetch(
+              `http://dongnaecomm.cafe24app.com/api/post/${postId}/comment`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  content: commentInput.value,
+                  email,
+                }),
+              }
+            );
+            const data = await response.json();
+            if (data.success) {
+              location.reload();
+            }
+          } catch (error) {}
+        });
+    });
+  </script>
+</html>

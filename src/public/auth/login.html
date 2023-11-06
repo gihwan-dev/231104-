@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <link
+      rel="stylesheet"
+      href="./login.css"
+    />
+    <title>Login</title>
+    <script
+      type="text/javascript"
+      src="https://static.nid.naver.com/js/naverLogin_implicit-1.0.3.js"
+      charset="utf-8"
+    ></script>
+    <script
+      type="text/javascript"
+      src="http://code.jquery.com/jquery-1.11.3.min.js"
+    ></script>
+  </head>
+  <body>
+    <main id="main-container">
+      <header id="login-header">
+        <img src="../assets/images/logo.png" />
+        <h1>
+          <a href="http://dongnaecomm.cafe24app.com">우리 동네 대동단결</a>
+        </h1>
+      </header>
+      <section id="login-form">
+        <h2>로그인</h2>
+        <div id="naver_id_login"></div>
+        <form id="login-form-field">
+          <input
+            placeholder="이메일"
+            type="email"
+          />
+          <input
+            placeholder="비밀번호"
+            type="password"
+          />
+          <button type="submit">로그인</button>
+        </form>
+        <footer id="login-footer">
+          <button id="signup-btn">회원가입</button>
+          <button id="find-pw-btn">비밀번호 찾기</button>
+        </footer>
+      </section>
+    </main>
+    <script type="text/javascript">
+      var naver_id_login = new naver_id_login(
+        "prLdFYJCVP8KAAgzmXlF",
+        "http://dongnaecomm.cafe24app.com"
+      );
+      var state = naver_id_login.getUniqState();
+      naver_id_login.setButton("white", 100, 40);
+      naver_id_login.setDomain("http://dongnaecomm.cafe24app.com/");
+      naver_id_login.setState(state);
+      naver_id_login.setPopup();
+      naver_id_login.init_naver_id_login();
+
+      const signupBtn = document.querySelector("#signup-btn");
+      signupBtn.addEventListener("click", () => {
+        location.href = "./signup.html";
+      });
+
+      const findPwBtn = document.querySelector("#find-pw-btn");
+      findPwBtn.addEventListener("click", () => {
+        location.href = "./findpw.html";
+      });
+
+      const loginForm = document.querySelector("#login-form-field");
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = e.target[0].value;
+        const password = e.target[1].value;
+        const result = await fetch(
+          "http://dongnaecomm.cafe24app.com/api/user/signin",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email,
+              password,
+            }),
+          }
+        );
+        const data = await result.json();
+        if (result.ok) {
+          if (data.isValid) {
+            window.localStorage.setItem("id", email);
+            location.href = "http://dongnaecomm.cafe24app.com/";
+          } else {
+            alert(data.message);
+          }
+        } else {
+          alert(data.message);
+        }
+      });
+    </script>
+  </body>
+</html>

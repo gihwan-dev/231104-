@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>signup</title>
+    <link
+      rel="stylesheet"
+      href="./signup.css"
+    />
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="title-select">
+        <img
+          id="logo"
+          src="../assets//images//logo.png"
+        />
+        <p id="title">우리동네 대동 단결</p>
+        <select id="pop-list">
+          <option value="성복동">성복동</option>
+          <option value="상현동">상현동</option>
+          <option value="풍덕천동">풍덕천동</option>
+          <option value="신봉동">신봉동</option>
+          <option value="죽전동">죽전동</option>
+          <option value="동천동">동천동</option>
+          <option value="고기동">고기동</option>
+        </select>
+      </div>
+      <button id="login-btn">로그인</button>
+    </header>
+    <main id="main-container">
+      <h2>회원 정보 입력</h2>
+      <form id="signup-form">
+        <div class="input-field">
+          <label>이름</label>
+          <input type="text" />
+        </div>
+        <div class="input-field">
+          <label>닉네임</label>
+          <input
+            id="nickname-input"
+            type="text"
+          />
+          <p id="nickname-message">닉네임을 입력해 주세요.</p>
+        </div>
+        <div class="input-field">
+          <label>이메일</label>
+          <input type="email" />
+        </div>
+        <div class="input-field">
+          <label>비밀번호</label>
+          <input type="password" />
+        </div>
+        <div class="input-field">
+          <label>비밀번호 확인</label>
+          <input type="password" />
+        </div>
+        <button
+          id="signup-btn"
+          type="submit"
+        >
+          회원가입
+        </button>
+      </form>
+    </main>
+  </body>
+  <script>
+    const loginBtn = document.querySelector("#login-btn");
+    loginBtn.addEventListener("click", () => {
+      location.href = "./login.html";
+    });
+
+    const nicknameInput = document.querySelector("#nickname-input");
+    const nicknameMessage = document.querySelector("#nickname-message");
+
+    nicknameInput.addEventListener("keyup", async (e) => {
+      const nickname = e.target.value;
+      if (nickname.length === 0) {
+        nicknameMessage.style.color = "red";
+        nicknameMessage.textContent = "닉네임을 입력해 주세요.";
+        return;
+      }
+      const result = await fetch(
+        `http://dongnaecomm.cafe24app.com/api/user/nickname`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nickname,
+          }),
+        }
+      );
+      const data = await result.json();
+      if (result.ok) {
+        if (data.isValid) {
+          nicknameMessage.style.color = "green";
+          nicknameMessage.textContent = "사용 가능한 닉네임입니다.";
+        } else {
+          nicknameMessage.style.color = "red";
+          nicknameMessage.textContent = "이미 사용중인 닉네임입니다.";
+        }
+      }
+    });
+
+    const form = document.querySelector("#signup-form");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = e.target[0].value;
+      const nickname = e.target[1].value;
+      const email = e.target[2].value;
+      const password = e.target[3].value;
+      const passwordCheck = e.target[4].value;
+
+      if (password !== passwordCheck) {
+        alert("비밀번호가 일치하지 않습니다.");
+        return;
+      }
+
+      //하나라도 비어있으면 안됨
+      if (!name || !nickname || !email || !password || !passwordCheck) {
+        alert("모든 항목을 입력해주세요.");
+        return;
+      }
+
+      const result = await fetch(
+        "http://dongnaecomm.cafe24app.com/api/user/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            nickname,
+            email,
+            password,
+          }),
+        }
+      );
+      const data = await result.json();
+      if (result.ok) {
+        if (data.isValid) {
+          location.href = "./success.html";
+        } else {
+          alert(data.message);
+        }
+      } else {
+        alert(data.message);
+      }
+    });
+  </script>
+</html>

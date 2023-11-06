@@ -1,0 +1,97 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+
+#find-pw-header>img {
+  width: 3rem;
+  height: 3rem;
+}
+
+#find-pw-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 1rem;
+  gap: 1rem;
+}
+
+#main-container {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#find-pw-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+}
+
+#find-pw-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+#find-pw-form-field>input {
+  width: 100%;
+  padding: 0.5rem 0.5rem;
+  border: none;
+  background-color: #e7e7e7;
+  box-sizing: border-box;
+}
+
+#find-pw-form-field>button {
+  width: 100%;
+  padding: 0.5rem 0.5rem;
+  border: none;
+  background-color: #FF007F;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#find-pw-footer {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+#find-pw-footer>button {
+  border: none;
+  background-color: transparent;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+#find-pw-link {
+  font-size: 0.75rem;
+  font-weight: bold;
+}

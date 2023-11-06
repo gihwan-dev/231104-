@@ -27,7 +27,7 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cors());
 
 app.use(express.static(__dirname + "/src/public"));
-
+// Wntjrw ntrj
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/src/public/index.html");
 });

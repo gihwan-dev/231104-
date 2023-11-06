@@ -1,11 +1,11 @@
 const mysql = require("mysql2/promise");
 
 const dbInfo = {
-  host: "localhost",
+  host: "dongnaecomm.cafe24app.com",
   port: "3306",
-  user: "root",
-  password: "Mswoori41@naver",
-  database: "231104",
+  user: "	devcafe1",
+  password: "dlatl13579!",
+  database: "devcafe1",
 };
 
 const pool = mysql.createPool(dbInfo);

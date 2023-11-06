@@ -18,8 +18,8 @@ var api_url = "";
 
 const port = process.env.PORT || 3000;
 
-const postRouter = require("./src/routes/post");
-const userRouter = require("./src/routes/user");
+const postRouter = require("./src/routes/post.js");
+const userRouter = require("./src/routes/user.js");
 
 app.use(morgan("dev"));
 app.use(bodyParser.json({ limit: "50mb" }));

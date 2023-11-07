@@ -53,7 +53,10 @@
         </div>
         <div class="input-field">
           <label>비밀번호</label>
-          <input type="password" />
+          <input
+            id="password-input-elem"
+            type="password"
+          />
         </div>
         <div class="input-field">
           <label>비밀번호 확인</label>
@@ -69,6 +72,18 @@
     </main>
   </body>
   <script>
+    // 패스워드 길이가 6개 이하일경우 빨간색 테두리로
+    // 패스워드 길이가 6개 이상일경우 초록색 테두리로
+    const passwordInput = document.querySelector("#password-input-elem");
+    passwordInput.addEventListener("keyup", (e) => {
+      const password = e.target.value;
+      if (password.length < 6) {
+        passwordInput.style.border = "1px solid red";
+      } else {
+        passwordInput.style.border = "1px solid green";
+      }
+    });
+
     // 로그인 버튼에 이벤트 리스너를 등록한다.
     const loginBtn = document.querySelector("#login-btn");
     // 로그인 버튼을 누르면 로그인 페이지로 이동한다.
@@ -126,6 +141,10 @@
       const email = e.target[2].value;
       const password = e.target[3].value;
       const passwordCheck = e.target[4].value;
+      if (password.length < 6) {
+        alert("비밀번호는 6자리 이상이어야 합니다.");
+        return;
+      }
 
       if (password !== passwordCheck) {
         alert("비밀번호가 일치하지 않습니다.");

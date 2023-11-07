@@ -155,6 +155,17 @@
 </html>
 
 <script type="module">
+  const logo = document.querySelector("#logo");
+  const title = document.querySelector("#title");
+
+  logo.addEventListener("click", () => {
+    location.href = "http://dongnaecomm.cafe24app.com/";
+  });
+
+  title.addEventListener("click", () => {
+    location.href = "http://dongnaecomm.cafe24app.com/";
+  });
+
   const area = new URLSearchParams(location.search).get("area");
   if (!area) {
     const url = new URL(window.location.href);

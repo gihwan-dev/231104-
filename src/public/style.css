@@ -160,3 +160,11 @@ body {
   cursor: pointer;
   border: 1px solid black;
 }
+
+#logo {
+  cursor: pointer;
+}
+
+#title {
+  cursor: pointer;
+}

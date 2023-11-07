@@ -138,3 +138,11 @@ body {
   text-decoration: none;
   color: black;
 }
+
+#logo {
+  cursor: pointer;
+}
+
+#title {
+  cursor: pointer;
+}

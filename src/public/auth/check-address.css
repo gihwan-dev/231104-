@@ -101,3 +101,11 @@ body {
   border-radius: 5px;
 
 }
+
+#logo {
+  cursor: pointer;
+}
+
+#title {
+  cursor: pointer;
+}

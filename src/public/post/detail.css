@@ -364,3 +364,11 @@ body {
   border-radius: 0.5rem;
   box-sizing: border-box;
 }
+
+#logo {
+  cursor: pointer;
+}
+
+#title {
+  cursor: pointer;
+}

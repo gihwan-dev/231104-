@@ -72,6 +72,17 @@
     </main>
   </body>
   <script>
+    const logo = document.querySelector("#logo");
+    const title = document.querySelector("#title");
+
+    logo.addEventListener("click", () => {
+      location.href = "http://dongnaecomm.cafe24app.com/";
+    });
+
+    title.addEventListener("click", () => {
+      location.href = "http://dongnaecomm.cafe24app.com/";
+    });
+
     // 패스워드 길이가 6개 이하일경우 빨간색 테두리로
     // 패스워드 길이가 6개 이상일경우 초록색 테두리로
     const passwordInput = document.querySelector("#password-input-elem");

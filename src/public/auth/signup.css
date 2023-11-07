@@ -79,3 +79,11 @@ body {
   font-weight: bold;
   cursor: pointer;
 }
+
+#logo {
+  cursor: pointer;
+}
+
+#title {
+  cursor: pointer;
+}

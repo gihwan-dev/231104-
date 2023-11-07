@@ -59,6 +59,17 @@
     </main>
   </body>
   <script type="text/javascript">
+    const logo = document.querySelector("#logo");
+    const title = document.querySelector("#title");
+
+    logo.addEventListener("click", () => {
+      location.href = "http://dongnaecomm.cafe24app.com/";
+    });
+
+    title.addEventListener("click", () => {
+      location.href = "http://dongnaecomm.cafe24app.com/";
+    });
+
     // 홈으로 버튼에 이벤트 리스너를 등록한다.
     const homeBtn = document.querySelector("#home-btn");
     homeBtn.addEventListener("click", () => {

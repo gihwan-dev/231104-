@@ -70,3 +70,11 @@ body {
   border-radius: 5px;
   background-color: #ff007f;
 }
+
+#logo {
+  cursor: pointer;
+}
+
+#title {
+  cursor: pointer;
+}

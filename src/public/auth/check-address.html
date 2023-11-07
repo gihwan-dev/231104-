@@ -97,8 +97,11 @@
         e.preventDefault();
 
         // 파일 확장자 .jpeg인지 확인
-        if (imageInput.files[0].type !== "image/jpeg") {
-          alert("jpeg 파일만 업로드 가능합니다.");
+        if (
+          imageInput.files[0].type !== "image/jpeg" &&
+          imageInput.files[0].type !== "image/png"
+        ) {
+          alert("jpeg 또는 png 파일만 업로드 가능합니다.");
           return;
         }
 

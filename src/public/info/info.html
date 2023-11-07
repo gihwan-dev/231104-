@@ -51,12 +51,20 @@
             >인증하기</a
           >
         </div>
+        <button id="delete-user-btn">탈퇴하기</button>
       </section>
       <section id="user-post-container">
         <h2>내가 쓴 글</h2>
         <ul id="user-post-list"></ul>
       </section>
     </main>
+    <div id="delete-modal">
+      <div id="delete-modal-content">
+        <p>정말로 탈퇴하시겠습니까?</p>
+        <button id="delete-modal-cancel-btn">취소</button>
+        <button id="delete-modal-delete-btn">탈퇴</button>
+      </div>
+    </div>
   </body>
   <script type="text/javascript">
     const logo = document.querySelector("#logo");
@@ -79,6 +87,52 @@
     // 정보 확인을 위한 비밀번호를 입력하고 확인 버튼을 누르면
     const checkPwContainer = document.querySelector("#check-pw-container");
     const userContainer = document.querySelector("#user-info-container");
+    const deleteBtn = document.querySelector("#delete-user-btn");
+
+    deleteBtn.addEventListener("click", async () => {
+      try {
+        const modal = document.querySelector("#delete-modal");
+        modal.style.display = "block";
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    const deleteModalCancelBtn = document.querySelector(
+      "#delete-modal-cancel-btn"
+    );
+    deleteModalCancelBtn.addEventListener("click", () => {
+      const modal = document.querySelector("#delete-modal");
+      modal.style.display = "none";
+    });
+
+    const deleteModalDeleteBtn = document.querySelector(
+      "#delete-modal-delete-btn"
+    );
+
+    deleteModalDeleteBtn.addEventListener("click", async () => {
+      try {
+        const email = localStorage.getItem("id");
+        const result = await fetch(
+          "http://dongnaecomm.cafe24app.com/api/user/delete",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email }),
+          }
+        );
+        const data = await result.json();
+        if (data.success) {
+          localStorage.removeItem("id");
+          alert("탈퇴가 완료되었습니다.");
+          location.href = "/";
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
 
     checkPwContainer.addEventListener("submit", async (e) => {
       try {
@@ -119,6 +173,7 @@
           userName.textContent = `이름: ${data.name}`;
           userNickname.textContent = `닉네임: ${data.nickname}`;
           userEmail.textContent = `이메일: ${data.email}`;
+          deleteBtn.style.display = "block";
 
           userPostContainer.style.visibility = "visible";
 

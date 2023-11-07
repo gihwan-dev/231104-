@@ -10,6 +10,19 @@ async function fetchWithNodeFetch(url, options) {
   return fetch(url, options);
 }
 
+router.get("/address", async (req, res) => {
+  try {
+    const [address] = await pool.query(`
+    SELECT *
+    FROM user
+    `);
+    res.send({ address: address[0].user_area, success: true });
+  } catch (error) {
+    console.error(error);
+    res.send({ message: "주소 인식 실패", success: false });
+  }
+});
+
 router.post("/signup", async (req, res) => {
   try {
     const [user, _] = await pool.query(`
@@ -182,14 +195,23 @@ router.post("/checkpw", async (req, res) => {
 router.post("/image", async (req, res) => {
   try {
     const data = req.body.image;
-    const base64Data = data.replace(/^data:image\/jpeg;base64,/, "");
+    // jpeg 인지 png 인지 확인한다.
+    const isJpeg = data.match(/^data:image\/jpeg;base64,/);
+    let base64Data;
+
+    if (isJpeg) {
+      base64Data = data.replace(/^data:image\/jpeg;base64,/, "");
+    } else {
+      base64Data = data.replace(/^data:image\/png;base64,/, "");
+    }
+
     const requestBody = {
       version: "V2",
       requestId: Math.random().toFixed(2).toString(),
       timestamp: Date.now(), // 현재 시간의 타임스탬프
       images: [
         {
-          format: "jpeg",
+          format: isJpeg ? "jpeg" : "png",
           name: "test1",
           data: base64Data, // Base64 인코딩된 이미지 데이터
         },
@@ -210,7 +232,7 @@ router.post("/image", async (req, res) => {
 
     const address = resultJson.images[0].idCard.result.dl.address[0].text;
 
-    const dongRegex = /\(([^)]+동),/; // '동'으로 끝나는 단어를 괄호 안에서 찾음
+    const dongRegex = /\(([^)]+동),/; // '동' 으로 끝나는 단어를 괄호 안에서 찾음
     const match = address.match(dongRegex);
 
     if (match && match[1]) {
@@ -227,6 +249,43 @@ router.post("/image", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.send({ message: "주소 인식 실패", isValid: false });
+  }
+});
+
+router.post("/checkcancomment", async (req, res) => {
+  try {
+    const postId = req.body.postId;
+    const email = req.body.email;
+    const [post] = await pool.query(`
+    SELECT *
+    FROM post
+    WHERE post_id = ${postId}
+    `);
+    const [user] = await pool.query(`
+    SELECT *
+    FROM user
+    WHERE id = "${email}"
+    `);
+    if (post[0].area !== user[0].user_area) {
+      res.send({ message: "댓글을 달 수 없습니다.", success: false });
+      return;
+    }
+    res.send({ message: "댓글을 달 수 있습니다.", success: true });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+router.post("/delete", async (req, res) => {
+  try {
+    const email = req.body.email;
+    await pool.query(`
+    DELETE FROM user
+    WHERE id = "${email}"
+    `);
+    res.send({ message: "게시글 삭제 성공", success: true });
+  } catch (error) {
+    console.error(error);
   }
 });
 

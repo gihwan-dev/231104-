@@ -58,7 +58,7 @@ body {
 
 #image-label {
   display: flex;
-  width: 100%;
+  width: fit-content;
   justify-content: center;
   align-items: center;
   flex-direction: column;

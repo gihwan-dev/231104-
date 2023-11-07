@@ -98,38 +98,99 @@ router.get("/main", async (req, res) => {
   res.send(posts);
 });
 
-router.get("/:id", async (req, res) => {
-  const id = req.params.id;
+router.get("/count", async (req, res) => {
+  try {
+    const category = req.query.category;
+    const area = req.query.area;
+    const [count] = await pool.query(`
+  SELECT COUNT(*) AS count
+  FROM post
+  WHERE category = ${category}
+  AND area = '${area}'
+  `);
+    res.send(count[0].count.toString());
+  } catch (error) {
+    console.error(error);
+  }
+});
 
-  await pool.query(`
-  UPDATE post
-  SET view_count = view_count + 1
-  WHERE post_id = ${id}
+router.post("/get/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const email = req.body.email;
+
+    const [visited] = await pool.query(`
+  SELECT *
+  FROM visit
+  WHERE user_id = "${email}"
+  AND post_id = ${id}
   `);
 
-  const [post] = await pool.query(`
+    if (visited.length === 0) {
+      await pool.query(`
+    UPDATE post
+    SET view_count = view_count + 1
+    WHERE post_id = ${id}
+    `);
+
+      await pool.query(`
+    INSERT INTO visit (post_id, user_id)
+    VALUES (${id}, '${email}')
+    `);
+    }
+
+    const [post] = await pool.query(`
   SELECT *
   FROM post
   WHERE post_id = ${id}
   `);
 
-  const [comments] = await pool.query(`
+    const [comments] = await pool.query(`
   SELECT *
   FROM comment
   WHERE post_id = ${id}
   ORDER BY comment_id DESC
   `);
-  const [user] = await pool.query(`
+    const [user] = await pool.query(`
   SELECT *
   FROM user
   WHERE id = '${post[0].owner_id}'
   `);
 
-  res.send({
-    post: post[0],
-    comments,
-    user: user[0],
-  });
+    res.send({
+      post: post[0],
+      comments,
+      user: user[0],
+    });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+router.get("/image/:id", async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT image FROM post WHERE post_id = ?",
+      [req.params.id]
+    );
+    if (rows.length > 0) {
+      const imageBuffer = rows[0].image;
+      const imageBase64 = imageBuffer.toString("base64");
+      const isJpeg = imageBase64.startsWith("/9j/");
+
+      if (isJpeg) {
+        res.setHeader("Content-Type", "image/jpeg");
+      } else {
+        res.setHeader("Content-Type", "image/png");
+      }
+      res.send(Buffer.from(imageBase64, "base64"));
+    } else {
+      res.status(404).send("Image not found");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
 });
 
 router.post("/", async (req, res) => {
@@ -138,7 +199,17 @@ router.post("/", async (req, res) => {
     const content = req.body.content;
     const category = req.body.category;
     const email = req.body.email;
+    const image = req.body.image;
     const now = new Date();
+
+    let buffer;
+
+    if (!image) {
+      buffer = null;
+    } else {
+      const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+      buffer = Buffer.from(base64Data, "base64");
+    }
 
     const [user] = await pool.query(`
     SELECT *
@@ -153,10 +224,14 @@ router.post("/", async (req, res) => {
 
     // 날짜 부분만 잘라냅니다 ("2023-11-06").
     const dateString = isoString.split("T")[0];
-    await pool.query(`
-    INSERT INTO post (title, content, category, area, owner_id, view_count, favorite_count, comment_count, reg_date)
-    VALUES ('${title}', '${content}', ${category}, '${area}', '${email}', 0, 0, 0, '${dateString}')
-    `);
+    await pool.query(
+      `
+    INSERT INTO post (title, content, category, area, owner_id, view_count, favorite_count, comment_count, reg_date, image)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+      [title, content, category, area, email, 0, 0, 0, dateString, buffer]
+    );
+
     res.send({ message: "게시글 작성 성공", success: true });
   } catch (error) {
     console.error(error);
@@ -225,6 +300,54 @@ router.patch("/:id", async (req, res) => {
   }
 });
 
+router.patch("/:id/pickup", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const [done] = await pool.query(`
+    SELECT *
+    FROM pickup
+    WHERE post_id = ${id}
+    `);
+
+    // post reg_date 가 현재 날짜 기준 1주일 이 지났는지 확인
+
+    // 1주일 지났으면 pickup 테이블에 추가
+
+    // 1주일 지나지 않았으면 pickup 테이블에 추가하지 않음
+
+    const [post] = await pool.query(`
+    SELECT *
+    FROM post
+    WHERE post_id = ${id}
+    `);
+
+    const regDate = new Date(post[0].reg_date);
+    const now = new Date();
+
+    const diff = now.getTime() - regDate.getTime();
+
+    const diffDays = diff / (1000 * 3600 * 24);
+
+    if (diffDays >= 7 && done.length === 0) {
+      await pool.query(`
+      UPDATE post
+      SET reg_date = NOW()
+      WHERE post_id = ${id}
+      `);
+      await pool.query(`
+      INSERT INTO pickup (post_id)
+      VALUES (${id})
+      `);
+      res.send({ message: "게시글 수정 성공", success: true });
+    } else {
+      res.send({ message: "픽업이 불가능한 게시물 입니다.", success: false });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
   try {
@@ -240,13 +363,32 @@ router.delete("/:id", async (req, res) => {
 
 router.patch("/:id/favorite/count", async (req, res) => {
   const id = req.params.id;
+  const email = req.body.email;
   try {
-    await pool.query(`
-    UPDATE post
-    SET favorite_count = favorite_count + 1
+    const [done] = await pool.query(`
+    SELECT *
+    FROM favorite
     WHERE post_id = ${id}
+    AND user_id = '${email}'
     `);
-    res.send({ message: "좋아요 수 변경 성공", success: true });
+
+    if (done.length === 0) {
+      await pool.query(`
+      INSERT INTO favorite (post_id, user_id)
+      VALUES (${id}, '${email}')
+      `);
+      await pool.query(`
+      UPDATE post
+      SET favorite_count = favorite_count + 1
+      WHERE post_id = ${id}
+      `);
+      res.send({ message: "좋아요 성공", success: true });
+    } else {
+      res.send({
+        message: "이미 좋아요를 누른 게시글 입니다.",
+        success: false,
+      });
+    }
   } catch (error) {
     console.error(error);
   }

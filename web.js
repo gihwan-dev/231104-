@@ -6,6 +6,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 const server = http.createServer(app);
 const io = socketIo(server);
+const cron = require("node-cron");
 const pool = require("./src/utils/mysql");
 
 const bodyParser = require("body-parser");
@@ -75,6 +76,20 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("채팅 연결 해제");
   });
+});
+
+cron.schedule("0 0 * * 1", async () => {
+  console.log("Running a job at the start of every week at midnight on Monday");
+
+  try {
+    // 여기에 실행할 쿼리를 넣습니다.
+    // pickup 테이블에 있는 모든 데이터를 삭제
+    await pool.query(`
+    DELETE FROM pickup
+    `);
+  } catch (error) {
+    console.error("Error executing query", error);
+  }
 });
 
 app.get("/naverlogin", function (req, res) {

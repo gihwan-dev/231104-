@@ -37,7 +37,7 @@
       </div>
     </header>
     <main id="main"></main>
-    <div id="chat-list">
+    <form id="chat-list">
       <p>실시간 채팅</p>
       <ul id="chat-items"></ul>
       <footer id="chat-footer">
@@ -47,11 +47,21 @@
           type="text"
         />
         <div>
-          <button id="chat-close-btn">닫기</button>
-          <button id="chat-send-btn">전송</button>
+          <button
+            type="button"
+            id="chat-close-btn"
+          >
+            닫기
+          </button>
+          <button
+            type="submit"
+            id="chat-send-btn"
+          >
+            전송
+          </button>
         </div>
       </footer>
-    </div>
+    </form>
     <div id="edit-post-modal">
       <div id="edit-modal-content">
         <form id="edit-form">
@@ -158,8 +168,13 @@
     }
 
     // 메시지 전송 버튼 이벤트 리스너 등록
-    chatSendBtn.addEventListener("click", () => {
+    chatList.addEventListener("submit", (e) => {
+      e.preventDefault();
       const content = chatInput.value;
+      if (content.length === 0) {
+        alert("메시지를 최소 1글자 이상 입력해주세요.");
+        return;
+      }
       // 전송 버튼 클릭시 아래 함수 실행
       sendMessage(content);
       chatInput.value = "";
@@ -189,9 +204,19 @@
 
     // 게시글 상세 정보를 가져오는 함수
     async function getPostDetail() {
+      const email = localStorage.getItem("id");
       const postId = new URLSearchParams(location.search).get("id");
       const response = await fetch(
-        `http://dongnaecomm.cafe24app.com/api/post/${postId}`
+        `http://dongnaecomm.cafe24app.com/api/post/get/${postId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+          }),
+        }
       );
       const data = await response.json();
       const main = document.querySelector("#main");
@@ -214,6 +239,7 @@
               ? `
           <button id="edit-btn">수정</button>
           <button id="delete-btn">삭제</button>
+          <button id="pickup-btn">끌올</button>
           `
               : ""
           }
@@ -221,17 +247,27 @@
         </div>
         </div>
         <div id="post-container">
-          <p id="post-content">${data.post.content}</p>
+          <div>
+            <p id="post-content">${data.post.content}</p>
+          ${
+            data.post.image
+              ? `<img src="http://dongnaecomm.cafe24app.com/api/post/image/${postId}" alt="Post Image" />`
+              : ``
+          }
+            </div>
           <button id="favorite-btn">추천하기 ${
             data.post.favorite_count
           }</button>
-          <button id="open-chat-btn">실시간 채팅</button>
+          
         </div>
         <section>
           <h4>댓글</h4>
           <form id="comment-form">
             <input id="comment-input" type="text" />
-            <button type="submit" id="comment-btn">등록</button>
+            <div id="comment-btn-list">
+              <button type="button" id="open-chat-btn">실시간 채팅</button>
+              <button type="submit" id="comment-btn">등록</button>
+              </div>
           </form>
           <ul id="comment-list">
           </ul>
@@ -239,15 +275,6 @@
       </div>
       `;
       main.appendChild(postDetail);
-
-      // 채팅 리스트 요소 받아오기
-      const chatList = document.querySelector("#chat-list");
-      const openChatBtn = document.querySelector("#open-chat-btn");
-
-      // 채팅 리스트 열기
-      openChatBtn.addEventListener("click", () => {
-        chatList.style.display = "block";
-      });
 
       // 댓글 리스트 요소 받아오기
       const commentList = document.querySelector("#comment-list");
@@ -292,6 +319,68 @@
     }
     // 게시글 상세 정보를 가져온 이후의 동작
     getPostDetail().then(() => {
+      const pickupBtn = document.querySelector("#pickup-btn");
+      pickupBtn &&
+        pickupBtn.addEventListener("click", async () => {
+          try {
+            const postId = new URLSearchParams(location.search).get("id");
+            const response = await fetch(
+              `http://dongnaecomm.cafe24app.com/api/post/${postId}/pickup`,
+              {
+                method: "PATCH",
+              }
+            );
+            const data = await response.json();
+            if (data.success) {
+              alert("끌올되었습니다.");
+              location.reload();
+            } else {
+              alert("픽업이 불가능한 게시글입니다.");
+            }
+          } catch (error) {}
+        });
+      const openChatBtn = document.querySelector("#open-chat-btn");
+      const chatList = document.querySelector("#chat-list");
+
+      openChatBtn.addEventListener("click", async () => {
+        try {
+          const postId = new URLSearchParams(location.search).get("id");
+
+          const email = localStorage.getItem("id");
+          const canChat = await fetch(
+            "http://dongnaecomm.cafe24app.com/api/user/checkcancomment",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                postId,
+                email,
+              }),
+            }
+          );
+
+          if (!canChat.ok) {
+            throw new Error(
+              "댓글을 달 수 있는 권한이 없습니다. 주소를 확인해주세요."
+            );
+          }
+          const canChatResult = await canChat.json();
+
+          console.log(canChatResult);
+
+          if (!canChatResult.success) {
+            alert("댓글을 달 수 있는 권한이 없습니다. 주소를 확인해주세요.");
+            return;
+          }
+          chatList.style.display = "block";
+        } catch (error) {
+          console.error(error);
+          alert("알수없는 오류로 실패했습니다.");
+          return;
+        }
+      });
       // 필요한 요소 변수에 할당
       const editBtn = document.querySelector("#edit-btn");
       const deleteBtn = document.querySelector("#delete-btn");
@@ -308,6 +397,7 @@
       // 추천하기 버튼 이벤트 리스너 등록
       favoriteBtn.addEventListener("click", async () => {
         try {
+          const email = localStorage.getItem("id");
           const postId = new URLSearchParams(location.search).get("id");
           const response = await fetch(
             `http://dongnaecomm.cafe24app.com/api/post/${postId}/favorite/count`,
@@ -316,11 +406,16 @@
               headers: {
                 "Content-Type": "application/json",
               },
+              body: JSON.stringify({
+                email,
+              }),
             }
           );
           const data = await response.json();
           if (data.success) {
             location.reload();
+          } else {
+            alert("이미 추천한 게시글입니다.");
           }
         } catch (error) {}
       });
@@ -371,6 +466,16 @@
           e.preventDefault();
           try {
             const postId = new URLSearchParams(location.search).get("id");
+            if (editTitleInput.value.length === 0) {
+              alert("제목을 최소 1글자 이상 입력해주세요.");
+              return;
+            }
+
+            if (editContent.value.length === 0) {
+              alert("내용을 최소 1글자 이상 입력해주세요.");
+              return;
+            }
+
             const response = await fetch(
               `http://dongnaecomm.cafe24app.com/api/post/${postId}`,
               {
@@ -429,19 +534,45 @@
       const commentForm = document.querySelector("#comment-form");
       commentForm &&
         commentForm?.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const commentInput = document.querySelector("#comment-input");
-          // localStorage 에서 이메일 가져오기
-          const email = localStorage.getItem("id");
-          // 이메일이 없다면 로그인이 필요하다는 메시지를 띄우고 댓글을 등록하지 않는다.
-          if (!email) {
-            alert("로그인이 필요한 기능입니다.");
-            commentInput.value = "";
-            return;
-          }
           // 댓글 등록 요청
           try {
+            e.preventDefault();
+            console.log("send");
             const postId = new URLSearchParams(location.search).get("id");
+            const checkCanComment = await fetch(
+              "http://dongnaecomm.cafe24app.com/api/user/checkcancomment",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  postId,
+                  email: localStorage.getItem("id"),
+                }),
+              }
+            );
+            const checkResult = await checkCanComment.json();
+
+            if (!checkResult.success) {
+              alert("댓글을 달 수 있는 권한이 없습니다. 주소를 확인해주세요.");
+              return;
+            }
+            const commentInput = document.querySelector("#comment-input");
+            // localStorage 에서 이메일 가져오기
+            const email = localStorage.getItem("id");
+            // 이메일이 없다면 로그인이 필요하다는 메시지를 띄우고 댓글을 등록하지 않는다.
+            if (!email) {
+              alert("로그인이 필요한 기능입니다.");
+              commentInput.value = "";
+              return;
+            }
+
+            if (commentInput.value.length === 0) {
+              alert("댓글을 최소 1글자 이상 입력해주세요.");
+              return;
+            }
+
             const response = await fetch(
               `http://dongnaecomm.cafe24app.com/api/post/${postId}/comment`,
               {

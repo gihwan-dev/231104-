@@ -99,3 +99,13 @@ body {
   color: black;
   font-size: 0.875rem;
 }
+
+#image-upload-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  border: 1px solid #e7e7e7;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  align-items: center;
+}

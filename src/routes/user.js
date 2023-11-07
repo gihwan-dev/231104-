@@ -4,6 +4,7 @@ const router = express.Router();
 const pool = require("../utils/mysql");
 
 const { hash, compare } = require("../utils/hash");
+const fetch = require("node-fetch");
 
 function getArea(address) {
   switch (address) {

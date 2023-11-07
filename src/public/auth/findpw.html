@@ -69,6 +69,8 @@
           if (data.isValid) {
             alert("인증에 성공했습니다. 비밀번호를 변경해 주세요.");
             location.href = "./changepw.html" + "?email=" + email;
+          } else {
+            alert("인증에 실패했습니다.");
           }
         }
       } catch (error) {

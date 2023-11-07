@@ -289,4 +289,25 @@ router.post("/delete", async (req, res) => {
   }
 });
 
+router.post("/findId", async (req, res) => {
+  const name = req.body.name;
+  const nickname = req.body.nickname;
+
+  try {
+    const [user] = await pool.query(`
+    SELECT *
+    FROM user
+    WHERE name = '${name}' AND nick_name = '${nickname}'
+    `);
+    console.log(user[0]);
+    if (user.length === 0) {
+      res.send({ message: "존재하지 않는 회원입니다.", success: false });
+    } else {
+      res.send({ message: user[0].id, success: true, email: user[0].id });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 module.exports = router;

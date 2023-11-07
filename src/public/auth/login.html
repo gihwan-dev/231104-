@@ -45,11 +45,16 @@
         </form>
         <footer id="login-footer">
           <button id="signup-btn">회원가입</button>
+          <button id="find-email-btn">이메일 찾기</button>
           <button id="find-pw-btn">비밀번호 찾기</button>
         </footer>
       </section>
     </main>
     <script type="text/javascript">
+      const findIdBtn = document.querySelector("#find-email-btn");
+      findIdBtn.addEventListener("click", () => {
+        location.href = "./findId.html";
+      });
       // 네이버 api 로그인을 위한 객체 초기화
       var naver_id_login = new naver_id_login(
         "8KXeg4eZHdnZEfoBjghJ",

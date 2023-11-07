@@ -165,6 +165,8 @@
       }`;
       // 채팅 리스트에 추가한다.
       chatItems.appendChild(li);
+      // 채팅 리스트의 스크롤을 맨 아래로 내린다.
+      chatItems.scrollTop = chatItems.scrollHeight;
     }
 
     // 메시지 전송 버튼 이벤트 리스너 등록

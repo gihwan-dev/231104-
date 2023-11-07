@@ -308,16 +308,15 @@ body {
 #chat-list {
   display: none;
   position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  right: 1rem;
+  bottom: 1rem;
   background-color: white;
   border: 1px solid black;
   border-radius: 0.5rem;
   padding: 1rem;
-  width: 30rem;
+  width: 20rem;
   max-height: 30rem;
-  overflow-y: scroll;
+  overflow-y: hidden;
 }
 
 #chat-items {
@@ -327,6 +326,8 @@ body {
   flex-direction: column;
   gap: 0.25rem;
   border: 1px solid #e7e7e7;
+  height: 20rem;
+  overflow: scroll;
 }
 
 #chat-footer {

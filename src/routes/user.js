@@ -197,49 +197,54 @@ router.post("/checkpw", async (req, res) => {
 });
 
 router.post("/image", async (req, res) => {
-  const data = req.body.image;
-  const base64Data = data.replace(/^data:image\/jpeg;base64,/, "");
-  const requestBody = {
-    version: "V2",
-    requestId: Math.random().toFixed(2).toString(),
-    timestamp: Date.now(), // 현재 시간의 타임스탬프
-    images: [
+  try {
+    const data = req.body.image;
+    const base64Data = data.replace(/^data:image\/jpeg;base64,/, "");
+    const requestBody = {
+      version: "V2",
+      requestId: Math.random().toFixed(2).toString(),
+      timestamp: Date.now(), // 현재 시간의 타임스탬프
+      images: [
+        {
+          format: "jpeg",
+          name: "test1",
+          data: base64Data, // Base64 인코딩된 이미지 데이터
+        },
+      ],
+    };
+    const result = await fetch(
+      "https://zbbo2mg3lo.apigw.ntruss.com/custom/v1/25970/6b28ec0a082310b1527c7ed022d01691bc04f3c0461c997c7b97a6defc0567cf/document/id-card",
       {
-        format: "jpeg",
-        name: "test1",
-        data: base64Data, // Base64 인코딩된 이미지 데이터
-      },
-    ],
-  };
-  const result = await fetch(
-    "https://zbbo2mg3lo.apigw.ntruss.com/custom/v1/25970/6b28ec0a082310b1527c7ed022d01691bc04f3c0461c997c7b97a6defc0567cf/document/id-card",
-    {
-      method: "POST",
-      headers: {
-        "X-OCR-SECRET": "TElBckJLb3JjeWFEZGFzTlVmR1VscXZ0cVVyR3RVak8=",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    }
-  );
-  const resultJson = await result.json();
+        method: "POST",
+        headers: {
+          "X-OCR-SECRET": "TElBckJLb3JjeWFEZGFzTlVmR1VscXZ0cVVyR3RVak8=",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      }
+    );
+    const resultJson = await result.json();
 
-  console.log(resultJson);
+    console.log(resultJson);
 
-  const address = resultJson.images[0].idCard.result.dl.address[0].text;
+    const address = resultJson.images[0].idCard.result.dl.address[0].text;
 
-  const dongRegex = /\(([^)]+동),/; // '동'으로 끝나는 단어를 괄호 안에서 찾음
-  const match = address.match(dongRegex);
+    const dongRegex = /\(([^)]+동),/; // '동'으로 끝나는 단어를 괄호 안에서 찾음
+    const match = address.match(dongRegex);
 
-  if (match && match[1]) {
-    const area = getArea(match[1]);
-    await pool.query(`
+    if (match && match[1]) {
+      const area = getArea(match[1]);
+      await pool.query(`
     UPDATE user
     SET user_area = ${area}
     WHERE id = "${req.body.email}"
     `);
-    res.send({ message: "주소 인식 성공", isValid: true });
-  } else {
+      res.send({ message: "주소 인식 성공", isValid: true });
+    } else {
+      res.send({ message: "주소 인식 실패", isValid: false });
+    }
+  } catch (error) {
+    console.error(error);
     res.send({ message: "주소 인식 실패", isValid: false });
   }
 });

@@ -133,22 +133,29 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const title = req.body.title;
-  const content = req.body.content;
-  const category = req.body.category;
-  const area = req.body.area;
-  const email = req.body.email;
-  const now = new Date();
-
-  // ISO 문자열로 변환합니다 (예: "2023-11-06T14:19:07.000Z").
-  const isoString = now.toISOString();
-
-  // 날짜 부분만 잘라냅니다 ("2023-11-06").
-  const dateString = isoString.split("T")[0];
   try {
+    const title = req.body.title;
+    const content = req.body.content;
+    const category = req.body.category;
+    const email = req.body.email;
+    const now = new Date();
+
+    const [user] = await pool.query(`
+    SELECT *
+    FROM user
+    WHERE id = '${email}'
+    `);
+
+    const area = user[0].user_area;
+
+    // ISO 문자열로 변환합니다 (예: "2023-11-06T14:19:07.000Z").
+    const isoString = now.toISOString();
+
+    // 날짜 부분만 잘라냅니다 ("2023-11-06").
+    const dateString = isoString.split("T")[0];
     await pool.query(`
     INSERT INTO post (title, content, category, area, owner_id, view_count, favorite_count, comment_count, reg_date)
-    VALUES ('${title}', '${content}', ${category}, ${area}, '${email}', 0, 0, 0, '${dateString}')
+    VALUES ('${title}', '${content}', ${category}, '${area}', '${email}', 0, 0, 0, '${dateString}')
     `);
     res.send({ message: "게시글 작성 성공", success: true });
   } catch (error) {

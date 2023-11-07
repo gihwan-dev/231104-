@@ -73,7 +73,9 @@
             body: JSON.stringify({ password, email }),
           }
         );
+        // json() 을 통해 전달 받은 json 형식의 응답을 읽을 수 있는 객체 형식으로 변환한다.
         const data = await result.json();
+        // 응답의 결과가 ok 이면서 유효한 값이라면 비밀번호 변경에 성공한 것이다.
         if (result.ok) {
           if (data.isValid) {
             alert("비밀번호 변경에 성공했습니다.");
@@ -85,6 +87,7 @@
           alert("비밀번호 변경에 실패했습니다.");
         }
       } catch (err) {
+        // 에러가 발생했다면 콘솔에 에러를 출력한다.
         console.error(err);
       }
     });

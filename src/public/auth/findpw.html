@@ -44,11 +44,15 @@
   <script>
     // 이름과 이메일을 통해 비밀번호를 변경하도록 한다.
     const findPwForm = document.querySelector("#find-pw-form-field");
+    // 비밀번호 찾기 이벤트 리스너 등록
     findPwForm.addEventListener("submit", async (e) => {
       try {
+        // 기본 동작을 막아 새로고침 되지 않도록 한다.
         e.preventDefault();
+        // 이메일과 이름을 가져온다.
         const email = findPwForm.querySelector("input[type=email]").value;
         const name = findPwForm.querySelector("input[type=text]").value;
+        // 이메일과 이름을 통해 비밀번호를 찾는다.
         const result = await fetch(
           "http://dongnaecomm.cafe24app.com/api/user/findpw",
           {
@@ -59,6 +63,7 @@
             body: JSON.stringify({ email, name }),
           }
         );
+        // 비밀번호 찾기에 성공했다면 비밀번호 변경 페이지로 이동한다.
         const data = await result.json();
         if (result.ok) {
           if (data.isValid) {

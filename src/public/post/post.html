@@ -21,13 +21,13 @@
         />
         <p id="title">우리동네 대동 단결</p>
         <select id="pop-list">
-          <option value="1">성복동</option>
-          <option value="2">상현동</option>
-          <option value="3">풍덕천동</option>
-          <option value="4">신봉동</option>
-          <option value="5">죽전동</option>
-          <option value="6">동천동</option>
-          <option value="7">고기동</option>
+          <option value="성복동">성복동</option>
+          <option value="상현동">상현동</option>
+          <option value="풍덕천동">풍덕천동</option>
+          <option value="신봉동">신봉동</option>
+          <option value="죽정동">죽전동</option>
+          <option value="동천동">동천동</option>
+          <option value="고기동">고기동</option>
         </select>
       </div>
       <div style="display: flex; flex-direction: row; gap: 1rem">
@@ -78,6 +78,12 @@
     </main>
   </body>
   <script>
+    const myInfoBtn = document.getElementById("my-info-btn");
+
+    myInfoBtn.addEventListener("click", () => {
+      location.href = "../info/info.html";
+    });
+
     const freeNavBtn = document.getElementById("free-nav");
     const tradeNavBtn = document.getElementById("trade-nav");
     const eventNavBtn = document.getElementById("event-nav");
@@ -159,11 +165,12 @@
       location.href = `./post.html?category=${category}&area=${area}`;
     });
 
-    // TODO: 검색 기능 구현
+    // 검색 기능 구현
     const searchForm = document.querySelector("#search-form");
     const searchInput = document.querySelector("#search-input");
     const searchBtn = document.querySelector("#search-btn");
 
+    // 검색 기능 구현
     searchForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const searchValue = searchInput.value;
@@ -177,14 +184,13 @@
       addPostListToContainer(data);
     });
 
-    // TODO: 글작성 버튼 클릭시 클 작성 페이지로 이동
-
-    // TODO: 글 목록 페이지당 6개씩만 불러오기 및 페이지 네이션 구현
+    // 페이지네이션 구현
     const postListContainer = document.querySelector("#post-list-container");
     const previousPageBtn = document.querySelector("#previous-page-btn");
     const nextPageBtn = document.querySelector("#next-page-btn");
     const curPageNumber = document.querySelector("#cur-page-number");
 
+    // 현 페이지가 1이라면 return
     previousPageBtn.addEventListener("click", async () => {
       if (page === 1) {
         return;
@@ -199,6 +205,7 @@
       addPostListToContainer(data);
     });
 
+    // 다음 페이지 누르면 다음 페이지로 이동한다.
     nextPageBtn.addEventListener("click", async () => {
       page++;
       curPageNumber.textContent = page;
@@ -210,6 +217,7 @@
       addPostListToContainer(data);
     });
 
+    // 포스트를 받아오는 함수
     async function getPost() {
       const area = new URLSearchParams(window.location.search).get("area");
       const res = await fetch(
@@ -219,9 +227,11 @@
       addPostListToContainer(data);
     }
 
+    // 포스트를 컨테이너에 추가하는 함수
     function addPostListToContainer(data) {
       postListContainer.innerHTML = "";
       data.forEach((post) => {
+        // 여기부터
         const postContainer = document.createElement("a");
         postContainer.classList.add("post-container");
         postContainer.href = `./detail.html?id=${post.post_id}`;
@@ -253,6 +263,7 @@
         postContainer.appendChild(postContent);
         postContainer.appendChild(postCountList);
         postListContainer.appendChild(postContainer);
+        // 여기까지 포스트 html 추가하는 코드
       });
     }
     getPost();

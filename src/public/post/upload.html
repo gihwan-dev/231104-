@@ -21,13 +21,13 @@
         />
         <p id="title">우리동네 대동 단결</p>
         <select id="pop-list">
-          <option value="1">성복동</option>
-          <option value="2">상현동</option>
-          <option value="3">풍덕천동</option>
-          <option value="4">신봉동</option>
-          <option value="5">죽전동</option>
-          <option value="6">동천동</option>
-          <option value="7">고기동</option>
+          <option value="성복동">성복동</option>
+          <option value="상현동">상현동</option>
+          <option value="풍덕천동">풍덕천동</option>
+          <option value="신봉동">신봉동</option>
+          <option value="죽전동">죽전동</option>
+          <option value="동천동">동천동</option>
+          <option value="고기동">고기동</option>
         </select>
       </div>
 
@@ -87,19 +87,26 @@
     const category = new URLSearchParams(location.search).get("category");
     categoryText.innerText = getCategory(category);
 
+    // post 등록
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const email = localStorage.getItem("id");
+
+      if (!email) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+
       const res = await fetch("http://dongnaecomm.cafe24app.com/api/post", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: localStorage.getItem("id"),
+          email,
           title: title.value,
           content: content.value,
           category: category,
-          area: area,
         }),
       });
       const data = await res.json();
@@ -111,6 +118,7 @@
       }
     });
 
+    // 1 ~ 3에 따라 게시판 받기
     function getCategory(value) {
       switch (value) {
         case "1":

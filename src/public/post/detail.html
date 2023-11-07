@@ -22,13 +22,13 @@
         />
         <p id="title">우리동네 대동 단결</p>
         <select id="pop-list">
-          <option value="1">성복동</option>
-          <option value="2">상현동</option>
-          <option value="3">풍덕천동</option>
-          <option value="4">신봉동</option>
-          <option value="5">죽전동</option>
-          <option value="6">동천동</option>
-          <option value="7">고기동</option>
+          <option value="성복동">성복동</option>
+          <option value="상현동">상현동</option>
+          <option value="풍덕천동">풍덕천동</option>
+          <option value="신봉동">신봉동</option>
+          <option value="죽전동">죽전동</option>
+          <option value="동천동">동천동</option>
+          <option value="고기동">고기동</option>
         </select>
       </div>
       <div style="display: flex; flex-direction: row; gap: 1rem">
@@ -92,22 +92,28 @@
   </body>
 
   <script>
+    // 채팅 기능 관련 요소 받아오기
     const chatCloseBtn = document.querySelector("#chat-close-btn");
     const chatList = document.querySelector("#chat-list");
     const chatSendBtn = document.querySelector("#chat-send-btn");
     const chatInput = document.querySelector("#chat-input");
     const chatItems = document.querySelector("#chat-items");
 
+    // 채팅 종료 버튼 이벤트 리스너 등록
     chatCloseBtn.addEventListener("click", () => {
       chatList.style.display = "none";
     });
 
+    // 소켓 통신 시작
     const socket = io("http://dongnaecomm.cafe24app.com");
 
+    // 주소창 주소 파라미터에서 id 가져오기
     const postId = new URLSearchParams(location.search).get("id");
 
+    // 채팅방 입장
     socket.emit("joinRoom", postId);
 
+    // 이전 메시지 불러오기
     socket.on("previousMessages", (messages) => {
       messages.forEach((message) => {
         addMessageToChatList(message);
@@ -132,14 +138,18 @@
     // 메시지를 채팅 리스트에 추가하는 함수
     function addMessageToChatList(message) {
       const li = document.createElement("li");
+      // 메시지를 채팅 리스트에 추가한다.
       li.textContent = `${message.userNickName ?? message.user_nickname}: ${
         message.content
       }`;
+      // 채팅 리스트에 추가한다.
       chatItems.appendChild(li);
     }
 
+    // 메시지 전송 버튼 이벤트 리스너 등록
     chatSendBtn.addEventListener("click", () => {
       const content = chatInput.value;
+      // 전송 버튼 클릭시 아래 함수 실행
       sendMessage(content);
       chatInput.value = "";
     });
@@ -147,14 +157,17 @@
     const goBackBtn = document.querySelector("#go-back-btn");
     const myHomeBtn = document.querySelector("#my-home-btn");
 
+    // 뒤로가기 버튼 이벤트 리스너 등록
     goBackBtn.addEventListener("click", () => {
       history.back();
     });
 
+    // 홈으로 버튼 이벤트 리스너 등록
     myHomeBtn.addEventListener("click", () => {
       location.href = "http://dongnaecomm.cafe24app.com/";
     });
 
+    // 날짜 포맷팅 함수
     function getFormattedDate(date) {
       const newDate = new Date(date);
       const year = newDate.getFullYear();
@@ -163,8 +176,7 @@
       return `${year}년 ${month}월 ${day}일`;
     }
 
-    // TODO: 게시글 상세 정보를 가져오는 함수를 구현
-    // TODO: 작성자 닉네임 필요, 댓글 필요,
+    // 게시글 상세 정보를 가져오는 함수
     async function getPostDetail() {
       const postId = new URLSearchParams(location.search).get("id");
       const response = await fetch(
@@ -173,6 +185,7 @@
       const data = await response.json();
       const main = document.querySelector("#main");
       const postDetail = document.createElement("div");
+      // 받아온 데이터를 토대로 html 추가
       postDetail.innerHTML = `
       <div id="post-container">
         <div id="post-top-banner">
@@ -216,15 +229,19 @@
       `;
       main.appendChild(postDetail);
 
+      // 채팅 리스트 요소 받아오기
       const chatList = document.querySelector("#chat-list");
       const openChatBtn = document.querySelector("#open-chat-btn");
 
+      // 채팅 리스트 열기
       openChatBtn.addEventListener("click", () => {
         chatList.style.display = "block";
       });
 
+      // 댓글 리스트 요소 받아오기
       const commentList = document.querySelector("#comment-list");
 
+      // 댓글 리스트 HTML에 추가
       data.comments.forEach((comment) => {
         const li = document.createElement("li");
         li.innerHTML = `
@@ -245,6 +262,7 @@
           `#comment-delete-btn-${comment.comment_id}`
         );
 
+        // 댓글 삭제 버튼 이벤트 리스너 등록
         commentDeleteBtn.addEventListener("click", async () => {
           try {
             const response = await fetch(
@@ -261,7 +279,9 @@
         });
       });
     }
+    // 게시글 상세 정보를 가져온 이후의 동작
     getPostDetail().then(() => {
+      // 필요한 요소 변수에 할당
       const editBtn = document.querySelector("#edit-btn");
       const deleteBtn = document.querySelector("#delete-btn");
       const editPostModal = document.querySelector("#edit-post-modal");
@@ -274,6 +294,7 @@
       const deleteModal = document.querySelector("#delete-modal");
       const favoriteBtn = document.querySelector("#favorite-btn");
 
+      // 추천하기 버튼 이벤트 리스너 등록
       favoriteBtn.addEventListener("click", async () => {
         try {
           const postId = new URLSearchParams(location.search).get("id");
@@ -303,16 +324,19 @@
         "#delete-modal-cancel-btn"
       );
 
+      // 수정하기 버튼 이벤트 리스너 등록
       deleteModalCancelBtn &&
         deleteModalCancelBtn.addEventListener("click", () => {
           deleteModal.style.display = "none";
         });
 
+      // 수정 취소 버튼 이벤트 리스너 등록
       editCancleBtn &&
         editCancleBtn.addEventListener("click", () => {
           editPostModal.style.display = "none";
         });
 
+      // 수정하기 버튼 이벤트 리스너 등록
       editBtn &&
         editBtn.addEventListener("click", () => {
           editPostModal.style.display = "flex";
@@ -322,6 +346,7 @@
             document.querySelector("#post-content").textContent;
         });
 
+      // 수정하기 모달창 이벤트 리스너 등록 이외의 부분 클릭시 모달창이 닫히도록 한다.
       editPostModal &&
         editPostModal.addEventListener("click", (e) => {
           if (e.target === editPostModal) {
@@ -329,6 +354,7 @@
           }
         });
 
+      // 수정하기 버튼 클릭시 form 이벤트 리스너 등록
       editForm &&
         editForm.addEventListener("submit", async (e) => {
           e.preventDefault();
@@ -349,16 +375,19 @@
             );
             const data = await response.json();
             if (data.success) {
+              // 성공했다면 새로고침
               location.reload();
             }
           } catch (error) {}
         });
 
+      // 삭제하기 버튼 클릭시 모달창 오픈
       deleteBtn &&
         deleteBtn.addEventListener("click", () => {
           deleteModal.style.display = "block";
         });
 
+      // 모달창 이외의 범위 클릭시 모달창 닫히도록 이벤트 리스너 등록
       deleteModal &&
         deleteModal.addEventListener("click", (e) => {
           if (e.target === deleteModal) {
@@ -366,6 +395,7 @@
           }
         });
 
+      // 삭제하기 버튼 클릭시 삭제 요청
       deleteModalConfirmBtn &&
         deleteModalConfirmBtn.addEventListener("click", async () => {
           try {
@@ -378,22 +408,27 @@
             );
             const data = await response.json();
             if (data.success) {
+              // 포스트 삭제 이후 홈으로 돌아가기
               location.href = `http://dongnaecomm.cafe24app.com/`;
             }
           } catch (error) {}
         });
 
+      // 댓글 등록 버튼 이벤트 리스너 등록
       const commentForm = document.querySelector("#comment-form");
       commentForm &&
         commentForm?.addEventListener("submit", async (e) => {
           e.preventDefault();
           const commentInput = document.querySelector("#comment-input");
+          // localStorage 에서 이메일 가져오기
           const email = localStorage.getItem("id");
+          // 이메일이 없다면 로그인이 필요하다는 메시지를 띄우고 댓글을 등록하지 않는다.
           if (!email) {
             alert("로그인이 필요한 기능입니다.");
             commentInput.value = "";
             return;
           }
+          // 댓글 등록 요청
           try {
             const postId = new URLSearchParams(location.search).get("id");
             const response = await fetch(

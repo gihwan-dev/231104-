@@ -5,27 +5,6 @@ const pool = require("../utils/mysql");
 
 const { hash, compare } = require("../utils/hash");
 
-function getArea(address) {
-  switch (address) {
-    case "성복동":
-      return 1;
-    case "상현동":
-      return 2;
-    case "풍덕천동":
-      return 3;
-    case "신봉동":
-      return 4;
-    case "죽전동":
-      return 5;
-    case "동천동":
-      return 6;
-    case "고기동":
-      return 7;
-    default:
-      return 1;
-  }
-}
-
 async function fetchWithNodeFetch(url, options) {
   const { default: fetch } = await import("node-fetch");
   return fetch(url, options);
@@ -42,9 +21,9 @@ router.post("/signup", async (req, res) => {
       const hashedPassword = await hash(req.body.password);
       await pool.query(`
       INSERT INTO user
-      (id, pw, name, nick_name, role, user_area)
+      (id, pw, name, nick_name, role)
       VALUES
-      ("${req.body.email}","${hashedPassword}", "${req.body.name}", "${req.body.nickname}", 1, 0)
+      ("${req.body.email}","${hashedPassword}", "${req.body.name}", "${req.body.nickname}", 1)
       `);
       res.send({ message: "회원가입 성공", isValid: true });
     } else {
@@ -235,10 +214,10 @@ router.post("/image", async (req, res) => {
     const match = address.match(dongRegex);
 
     if (match && match[1]) {
-      const area = getArea(match[1]);
+      const area = match[1];
       await pool.query(`
     UPDATE user
-    SET user_area = ${area}
+    SET user_area = "${area}"
     WHERE id = "${req.body.email}"
     `);
       res.send({ message: "주소 인식 성공", isValid: true });

@@ -69,21 +69,27 @@
     </main>
   </body>
   <script>
+    // 로그인 버튼에 이벤트 리스너를 등록한다.
     const loginBtn = document.querySelector("#login-btn");
+    // 로그인 버튼을 누르면 로그인 페이지로 이동한다.
     loginBtn.addEventListener("click", () => {
       location.href = "./login.html";
     });
 
+    // 닉네임 중복 확인
     const nicknameInput = document.querySelector("#nickname-input");
     const nicknameMessage = document.querySelector("#nickname-message");
 
     nicknameInput.addEventListener("keyup", async (e) => {
       const nickname = e.target.value;
       if (nickname.length === 0) {
+        // 닉네임이 유효하지 않다면 메시지를 빨간색으로 표시한다.
         nicknameMessage.style.color = "red";
         nicknameMessage.textContent = "닉네임을 입력해 주세요.";
         return;
       }
+
+      // 닉네임 중복 확인
       const result = await fetch(
         `http://dongnaecomm.cafe24app.com/api/user/nickname`,
         {
@@ -97,6 +103,8 @@
         }
       );
       const data = await result.json();
+
+      // 닉네임이 유효하다면 메시지를 초록색으로 표시한다.
       if (result.ok) {
         if (data.isValid) {
           nicknameMessage.style.color = "green";
@@ -110,6 +118,7 @@
 
     const form = document.querySelector("#signup-form");
 
+    // 회원가입 버튼에 이벤트 리스너를 등록한다.
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = e.target[0].value;
@@ -129,6 +138,7 @@
         return;
       }
 
+      // 회원가입 요청
       const result = await fetch(
         "http://dongnaecomm.cafe24app.com/api/user/signup",
         {
@@ -144,6 +154,8 @@
           }),
         }
       );
+
+      // json() 을 통해 전달 받은 json 형식의 응답을 읽을 수 있는 객체 형식으로 변환한다.
       const data = await result.json();
       if (result.ok) {
         if (data.isValid) {

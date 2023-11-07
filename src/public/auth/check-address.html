@@ -63,21 +63,26 @@
     imageInput.addEventListener("change", (e) => {
       const imageContainer = document.querySelector("#image-container");
 
-      // 업로드된 이미지 파일 보여주기
+      // FileReader 객체를 생성한다. 이 객체를 통해 파일을 읽을 수 있다.
       const reader = new FileReader();
+      // 읽기가 완료되었을 때 실행되는 이벤트 핸들러를 등록한다.
       reader.onload = (e) => {
+        // 읽어들인 결과를 img 태그에 표시한다.
         const img = document.createElement("img");
         img.src = e.target.result;
         img.width = 300;
         img.height = 200;
         imageContainer.appendChild(img);
       };
+      // readAsDataURL 메서드를 통해 파일을 읽어들인다.
       reader.readAsDataURL(e.target.files[0]);
       imageContainer.innerHTML = "";
     });
 
+    // 주소 인증하기
     form.addEventListener("submit", async (e) => {
       try {
+        // e.preventDefault()를 통해 기본 동작을 막는다.
         e.preventDefault();
 
         // 파일 확장자 .jpeg인지 확인
@@ -86,12 +91,17 @@
           return;
         }
 
+        // FileReader 객체를 생성한다. 이 객체를 통해 파일을 읽을 수 있다.
         const reader = new FileReader();
         reader.readAsDataURL(imageInput.files[0]);
+        // 읽기가 완료되었을 때 실행되는 이벤트 핸들러를 등록한다.
         reader.onloadend = async () => {
+          // 읽어들인 결과를 img 태그에 표시한다.
           const base64Image = reader.result;
+          // 서버에 전송하기 전 상태를 html 에 표시해준다.
           const sendState = document.querySelector("#send-state");
           sendState.innerHTML = "전송 중입니다.";
+          // 서버에 이미지를 전송한다.
           const result = await fetch(
             "http://dongnaecomm.cafe24app.com/api/user/image",
             {
@@ -106,10 +116,15 @@
             }
           );
 
+          // 만약 결과가 ok 가 아니라면 에러를 던진다.
           if (!result.ok) {
             throw new Error("Network response was not ok.");
           }
+
+          // 서버에서 전달받은 json 형식의 응답을 읽을 수 있는 객체 형식으로 변환한다.
           const data = await result.json();
+
+          // 응답 결과에 따라 동작한다.
           if (data.isValid) {
             alert("주소 인증에 성공했습니다.");
             location.href = "../info/info.html";
@@ -118,6 +133,7 @@
           }
         };
       } catch (error) {
+        // 에러가 발생했다면 콘솔에 에러를 출력한다.
         console.error(error);
       }
     });

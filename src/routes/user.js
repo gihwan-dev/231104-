@@ -1,10 +1,10 @@
+import fetch from "node-fetch";
 const express = require("express");
 const router = express.Router();
 
 const pool = require("../utils/mysql");
 
 const { hash, compare } = require("../utils/hash");
-const fetch = require("node-fetch");
 
 function getArea(address) {
   switch (address) {
@@ -25,6 +25,11 @@ function getArea(address) {
     default:
       return 1;
   }
+}
+
+async function fetchWithNodeFetch(url, options) {
+  const { default: fetch } = await import("node-fetch");
+  return fetch(url, options);
 }
 
 router.post("/signup", async (req, res) => {
@@ -212,7 +217,7 @@ router.post("/image", async (req, res) => {
         },
       ],
     };
-    const result = await fetch(
+    const result = await fetchWithNodeFetch(
       "https://zbbo2mg3lo.apigw.ntruss.com/custom/v1/25970/6b28ec0a082310b1527c7ed022d01691bc04f3c0461c997c7b97a6defc0567cf/document/id-card",
       {
         method: "POST",
@@ -224,8 +229,6 @@ router.post("/image", async (req, res) => {
       }
     );
     const resultJson = await result.json();
-
-    console.log(resultJson);
 
     const address = resultJson.images[0].idCard.result.dl.address[0].text;
 

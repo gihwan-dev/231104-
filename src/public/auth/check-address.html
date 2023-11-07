@@ -47,7 +47,7 @@
           />
         </label>
         <button id="send-btn">전송</button>
-        <div id="send-result-container"></div>
+        <div id="send-state"></div>
       </form>
     </section>
   </body>
@@ -85,6 +85,8 @@
         reader.readAsDataURL(imageInput.files[0]);
         reader.onloadend = async () => {
           const base64Image = reader.result;
+          const sendState = document.querySelector("#send-state");
+          sendState.innerHTML = "전송 중입니다.";
           const result = await fetch(
             "http://dongnaecomm.cafe24app.com/api/user/image",
             {

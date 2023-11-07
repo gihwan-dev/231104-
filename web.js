@@ -127,5 +127,5 @@ app.get("/callback", function (req, res) {
 });
 
 server.listen(port, () => {
-  console.log(`server is running on ${port}`);
+  console.log(`server is running on ${port} cur time is ${Date.now()}`);
 });

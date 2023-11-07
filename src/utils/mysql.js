@@ -1,7 +1,7 @@
 const mysql = require("mysql2/promise");
 
 const dbInfo = {
-  host: "dongnaecomm.cafe24app.com",
+  host: "localhost",
   port: "3306",
   user: "	devcafe1",
   password: "dlatl13579!",

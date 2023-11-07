@@ -42,22 +42,27 @@
     </main>
   </body>
   <script>
+    // 이름과 이메일을 통해 비밀번호를 변경하도록 한다.
     const changePwForm = document.querySelector("#change-pw-form-field");
+    // 비밀번호 변경하기
     changePwForm.addEventListener("submit", async (e) => {
       try {
+        // 기본 동작을 막아 새로고침 되지 않도록 하낟.
         e.preventDefault();
+        // 비밀번호와 비밀번호 확인을 가져온다.
         const password = changePwForm.querySelector(
           "input[type=password]"
         ).value;
         const passwordCheck = changePwForm.querySelector(
           "input[type=password]"
         ).value;
+        // 비밀번호와 비밀번호 확인이 일치하는지 확인한다.
         if (password !== passwordCheck) {
           alert("비밀번호가 일치하지 않습니다.");
           return;
         }
+        // 비밀번호 변경에 필요한 이메일을 가져온다.
         const email = new URLSearchParams(location.search).get("email");
-        console.log(email);
         const result = await fetch(
           "http://dongnaecomm.cafe24app.com/api/user/changepw",
           {

@@ -223,6 +223,8 @@ router.post("/image", async (req, res) => {
   );
   const resultJson = await result.json();
 
+  console.log(resultJson);
+
   const address = resultJson.images[0].idCard.result.dl.address[0].text;
 
   const dongRegex = /\(([^)]+동),/; // '동'으로 끝나는 단어를 괄호 안에서 찾음

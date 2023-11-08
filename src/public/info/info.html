@@ -71,11 +71,11 @@
     const title = document.querySelector("#title");
 
     logo.addEventListener("click", () => {
-      location.href = "http://localhost:3000/";
+      location.href = "http://dongnaecomm.cafe24app.com/";
     });
 
     title.addEventListener("click", () => {
-      location.href = "http://localhost:3000/";
+      location.href = "http://dongnaecomm.cafe24app.com/";
     });
 
     // 홈으로 버튼에 이벤트 리스너를 등록한다.
@@ -113,13 +113,16 @@
     deleteModalDeleteBtn.addEventListener("click", async () => {
       try {
         const email = localStorage.getItem("id");
-        const result = await fetch("http://localhost:3000/api/user/delete", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        });
+        const result = await fetch(
+          "http://dongnaecomm.cafe24app.com/api/user/delete",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email }),
+          }
+        );
         const data = await result.json();
         if (data.success) {
           localStorage.removeItem("id");
@@ -141,13 +144,16 @@
         // 이메일을 가져온다.
         const email = localStorage.getItem("id");
         // 비밀번호와 이메일을 서버에 보내서 비밀번호가 일치하는지 확인한다.
-        const result = await fetch("http://localhost:3000/api/user/checkpw", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ password, email }),
-        });
+        const result = await fetch(
+          "http://dongnaecomm.cafe24app.com/api/user/checkpw",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ password, email }),
+          }
+        );
         const data = await result.json();
         // 유효하다면 사용자 정보를 가져온다.
         if (data.isValid) {

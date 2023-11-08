@@ -91,7 +91,7 @@
   <script type="text/javascript">
     var naver_id_login = new naver_id_login(
       "8KXeg4eZHdnZEfoBjghJ",
-      "http://dongnaecomm.cafe24app.com/"
+      "http://localhost:3000/"
     );
 
     if (
@@ -124,7 +124,7 @@
       if (window.localStorage.getItem("id")) {
         return;
       }
-      const result = await fetch(`http://dongnaecomm.cafe24app.com/api/user`, {
+      const result = await fetch(`http://localhost:3000/api/user`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -159,11 +159,11 @@
   const title = document.querySelector("#title");
 
   logo.addEventListener("click", () => {
-    location.href = "http://dongnaecomm.cafe24app.com/";
+    location.href = "http://localhost:3000/";
   });
 
   title.addEventListener("click", () => {
-    location.href = "http://dongnaecomm.cafe24app.com/";
+    location.href = "http://localhost:3000/";
   });
 
   const area = new URLSearchParams(location.search).get("area");
@@ -175,7 +175,7 @@
   const logoutBtn = document.querySelector("#logout-btn");
   logoutBtn.addEventListener("click", () => {
     window.localStorage.removeItem("id");
-    location.href = "http://dongnaecomm.cafe24app.com/";
+    location.href = "http://localhost:3000/";
   });
 
   // 더보기 누르면 해당 게시판으로 현재 서치 파라티어 area 가진채로 이동
@@ -229,9 +229,7 @@
     const url = new URL(window.location.href);
     const area = url.searchParams.get("area");
     const category = url.searchParams.get("category");
-    const result = await fetch(
-      `http://dongnaecomm.cafe24app.com/api/post?area=${area}`
-    );
+    const result = await fetch(`http://localhost:3000/api/post?area=${area}`);
     const data = await result.json();
     addPostListToContainer(data);
   }

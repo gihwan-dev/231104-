@@ -17,7 +17,7 @@
       <header id="change-pw-header">
         <img src="../assets/images/logo.png" />
         <h1>
-          <a href="http://dongnaecomm.cafe24app.com">우리 동네 대동단결</a>
+          <a href="http://localhost:3000">우리 동네 대동단결</a>
         </h1>
       </header>
       <section id="change-pw-form">
@@ -63,16 +63,13 @@
         }
         // 비밀번호 변경에 필요한 이메일을 가져온다.
         const email = new URLSearchParams(location.search).get("email");
-        const result = await fetch(
-          "http://dongnaecomm.cafe24app.com/api/user/changepw",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ password, email }),
-          }
-        );
+        const result = await fetch("http://localhost:3000/api/user/changepw", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ password, email }),
+        });
         // json() 을 통해 전달 받은 json 형식의 응답을 읽을 수 있는 객체 형식으로 변환한다.
         const data = await result.json();
         // 응답의 결과가 ok 이면서 유효한 값이라면 비밀번호 변경에 성공한 것이다.

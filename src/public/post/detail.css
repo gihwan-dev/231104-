@@ -382,3 +382,13 @@ body {
   flex-direction: column;
   gap: 0.5rem;
 }
+
+#delete-image-btn {
+  cursor: pointer;
+  border: none;
+  background-color: tomato;
+  padding: 0.5rem;
+  color: white;
+  font-weight: bold;
+  border-radius: 0.5rem;
+}

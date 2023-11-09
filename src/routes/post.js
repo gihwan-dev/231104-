@@ -35,7 +35,7 @@ router.get("/search", async (req, res) => {
     SELECT *
     FROM post
     WHERE category = ${category}
-    AND writer_nickname LIKE '%${keyword}%'
+    AND owner_nickname LIKE '%${keyword}%'
     ORDER BY reg_date DESC
     LIMIT 6
     OFFSET ${(page - 1) * 6}
@@ -193,6 +193,34 @@ router.get("/image/:id", async (req, res) => {
   }
 });
 
+router.patch("/image/:id", async (req, res) => {
+  const id = req.params.id;
+  const image = req.body.image;
+  try {
+    let buffer;
+
+    if (!image) {
+      buffer = null;
+    } else {
+      const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+      buffer = Buffer.from(base64Data, "base64");
+    }
+
+    await pool.query(
+      `
+    UPDATE post
+    SET image = ?
+    WHERE post_id = ${id}
+    `,
+      [buffer]
+    );
+
+    res.send({ message: "이미지 수정 성공", success: true });
+  } catch (e) {
+    res.send({ message: "이미지 수정 실패", success: false });
+  }
+});
+
 router.post("/", async (req, res) => {
   try {
     const title = req.body.title;
@@ -218,6 +246,7 @@ router.post("/", async (req, res) => {
     `);
 
     const area = user[0].user_area;
+    const nickname = user[0].nick_name;
 
     // ISO 문자열로 변환합니다 (예: "2023-11-06T14:19:07.000Z").
     const isoString = now.toISOString();
@@ -226,10 +255,22 @@ router.post("/", async (req, res) => {
     const dateString = isoString.split("T")[0];
     await pool.query(
       `
-    INSERT INTO post (title, content, category, area, owner_id, view_count, favorite_count, comment_count, reg_date, image)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO post (title, content, category, area, owner_id, view_count, favorite_count, comment_count, reg_date, image, owner_nickname)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `,
-      [title, content, category, area, email, 0, 0, 0, dateString, buffer]
+      [
+        title,
+        content,
+        category,
+        area,
+        email,
+        0,
+        0,
+        0,
+        dateString,
+        buffer,
+        nickname,
+      ]
     );
 
     res.send({ message: "게시글 작성 성공", success: true });
@@ -391,6 +432,20 @@ router.patch("/:id/favorite/count", async (req, res) => {
     }
   } catch (error) {
     console.error(error);
+  }
+});
+
+router.delete("/image/:id", async (req, res) => {
+  try {
+    const postId = req.params.id;
+    await pool.query(`
+    UPDATE post
+    SET image = NULL
+    WHERE post_id = ${postId}
+    `);
+    res.send({ message: "이미지 삭제 성공", success: true });
+  } catch (error) {
+    res.send({ message: "이미지 삭제 실패", success: false });
   }
 });
 

@@ -17,7 +17,7 @@
       <header id="find-pw-header">
         <img src="../assets/images/logo.png" />
         <h1>
-          <a href="http://dongnaecomm.cafe24app.com">우리 동네 대동단결</a>
+          <a href="http://localhost:3000">우리 동네 대동단결</a>
         </h1>
       </header>
       <section id="find-pw-form">
@@ -53,16 +53,13 @@
         const email = findPwForm.querySelector("input[type=email]").value;
         const name = findPwForm.querySelector("input[type=text]").value;
         // 이메일과 이름을 통해 비밀번호를 찾는다.
-        const result = await fetch(
-          "http://dongnaecomm.cafe24app.com/api/user/findpw",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email, name }),
-          }
-        );
+        const result = await fetch("http://localhost:3000/api/user/findpw", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, name }),
+        });
         // 비밀번호 찾기에 성공했다면 비밀번호 변경 페이지로 이동한다.
         const data = await result.json();
         if (result.ok) {

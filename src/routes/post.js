@@ -91,7 +91,7 @@ router.get("/main", async (req, res) => {
   FROM post
   WHERE category = ${category}
   AND area = '${area}'
-  ORDER BY reg_date DESC
+  ORDER BY timestamp DESC
   LIMIT 6
   OFFSET ${(page - 1) * 6}
   `);
@@ -332,7 +332,7 @@ router.patch("/:id/pickup", async (req, res) => {
     if (diffDays >= 7 && done.length === 0) {
       await pool.query(`
       UPDATE post
-      SET reg_date = NOW()
+      SET timestamp = NOW()
       WHERE post_id = ${id}
       `);
       await pool.query(`

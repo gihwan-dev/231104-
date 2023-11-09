@@ -61,11 +61,11 @@
     const title = document.querySelector("#title");
 
     logo.addEventListener("click", () => {
-      location.href = "http://dongnaecomm.cafe24app.com/";
+      location.href = "http://localhost:3000/";
     });
 
     title.addEventListener("click", () => {
-      location.href = "http://dongnaecomm.cafe24app.com/";
+      location.href = "http://localhost:3000/";
     });
 
     const form = document.querySelector("#main-form");
@@ -116,19 +116,16 @@
           const sendState = document.querySelector("#send-state");
           sendState.innerHTML = "전송 중입니다.";
           // 서버에 이미지를 전송한다.
-          const result = await fetch(
-            "http://dongnaecomm.cafe24app.com/api/user/image",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                image: base64Image,
-                email: localStorage.getItem("id"),
-              }),
-            }
-          );
+          const result = await fetch("http://localhost:3000/api/user/image", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              image: base64Image,
+              email: localStorage.getItem("id"),
+            }),
+          });
 
           // 만약 결과가 ok 가 아니라면 에러를 던진다.
           if (!result.ok) {

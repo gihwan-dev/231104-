@@ -14,7 +14,7 @@ const bodyParser = require("body-parser");
 var client_id = "8KXeg4eZHdnZEfoBjghJ";
 var client_secret = "MzneGT9I5r";
 var state = "RANDOM_STATE";
-var redirectURI = encodeURI("http://dongnaecomm.cafe24app.com/");
+var redirectURI = encodeURI("http://localhost:3000/");
 var api_url = "";
 
 const port = process.env.PORT || 3000;

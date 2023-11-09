@@ -10,11 +10,13 @@ async function fetchWithNodeFetch(url, options) {
   return fetch(url, options);
 }
 
-router.get("/address", async (req, res) => {
+router.post("/address", async (req, res) => {
+  const email = req.body.email;
   try {
     const [address] = await pool.query(`
     SELECT *
     FROM user
+    WHERE id = "${email}"
     `);
     res.send({ address: address[0].user_area, success: true });
   } catch (error) {

@@ -26,7 +26,7 @@
       <header id="login-header">
         <img src="../assets/images/logo.png" />
         <h1>
-          <a href="http://dongnaecomm.cafe24app.com">우리 동네 대동단결</a>
+          <a href="http://localhost:3000">우리 동네 대동단결</a>
         </h1>
       </header>
       <section id="login-form">
@@ -58,13 +58,13 @@
       // 네이버 api 로그인을 위한 객체 초기화
       var naver_id_login = new naver_id_login(
         "8KXeg4eZHdnZEfoBjghJ",
-        "http://dongnaecomm.cafe24app.com"
+        "http://localhost:3000"
       );
       // 네이버 로그인 버튼을 생성하기 위한 설정 흰색의 100x40 크기의 버튼을 생성한다.
       var state = naver_id_login.getUniqState();
       naver_id_login.setButton("white", 100, 40);
       // 네이버 로그인을 위한 도메인을 등록한다.
-      naver_id_login.setDomain("http://dongnaecomm.cafe24app.com/");
+      naver_id_login.setDomain("http://localhost:3000/");
       naver_id_login.setState(state);
       naver_id_login.setPopup();
       naver_id_login.init_naver_id_login();
@@ -87,19 +87,16 @@
         e.preventDefault();
         const email = e.target[0].value;
         const password = e.target[1].value;
-        const result = await fetch(
-          "http://dongnaecomm.cafe24app.com/api/user/signin",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email,
-              password,
-            }),
-          }
-        );
+        const result = await fetch("http://localhost:3000/api/user/signin", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        });
 
         // json() 을 통해 전달 받은 json 형식의 응답을 읽을 수 있는 객체 형식으로 변환한다.
         const data = await result.json();
@@ -108,7 +105,7 @@
           if (data.isValid) {
             // local스토리지에 이메일을 저장한다.
             window.localStorage.setItem("id", email);
-            location.href = "http://dongnaecomm.cafe24app.com/";
+            location.href = "http://localhost:3000/";
           } else {
             alert(data.message);
           }

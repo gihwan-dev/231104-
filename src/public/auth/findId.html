@@ -17,7 +17,7 @@
       <header id="find-Id-header">
         <img src="../assets/images/logo.png" />
         <h1>
-          <a href="http://dongnaecomm.cafe24app.com">우리 동네 대동단결</a>
+          <a href="http://localhost:3000">우리 동네 대동단결</a>
         </h1>
       </header>
       <section id="find-Id-form">
@@ -52,19 +52,16 @@
         alert("이름과 닉네임을 입력해주세요.");
         return;
       }
-      const res = await fetch(
-        "http://dongnaecomm.cafe24app.com/api/user/findId",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            nickname,
-          }),
-        }
-      );
+      const res = await fetch("http://localhost:3000/api/user/findId", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          nickname,
+        }),
+      });
       const data = await res.json();
       if (data.success) {
         alert(`아이디는 ${data.email} 입니다.`);

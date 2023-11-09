@@ -108,7 +108,7 @@
 
     nicknameInput.addEventListener("keyup", async (e) => {
       const nickname = e.target.value;
-      if (nickname.length === 0) {
+      if (nickname.length <= 2) {
         // 닉네임이 유효하지 않다면 메시지를 빨간색으로 표시한다.
         nicknameMessage.style.color = "red";
         nicknameMessage.textContent = "닉네임을 입력해 주세요.";

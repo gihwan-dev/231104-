@@ -285,7 +285,16 @@ router.post("/delete", async (req, res) => {
     DELETE FROM user
     WHERE id = "${email}"
     `);
-    res.send({ message: "게시글 삭제 성공", success: true });
+    await pool.query(`
+    DELETE FROM post
+    WHERE owner_id = "${email}"
+    `);
+    await pool.query(`
+    DELETE FROM comment
+    WHERE owner_id = "${email}"
+    `);
+
+    res.send({ message: "유저 삭제 성공", success: true });
   } catch (error) {
     console.error(error);
   }

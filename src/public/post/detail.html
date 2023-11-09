@@ -129,6 +129,8 @@
     const socket = io("http://dongnaecomm.cafe24app.com");
 
     // 주소창 주소 파라미터에서 id 가져오기
+    const email = localStorage.getItem("id");
+
     const postId = new URLSearchParams(location.search).get("id");
 
     // 채팅방 입장

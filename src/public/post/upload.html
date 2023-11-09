@@ -72,16 +72,16 @@
     const titleText = document.querySelector("#title");
 
     logo.addEventListener("click", () => {
-      location.href = "http://localhost:3000/";
+      location.href = "http://dongnaecomm.cafe24app.com/";
     });
 
     titleText.addEventListener("click", () => {
-      location.href = "http://localhost:3000/";
+      location.href = "http://dongnaecomm.cafe24app.com/";
     });
 
     const homeBtn = document.querySelector("#home-btn");
     homeBtn.addEventListener("click", () => {
-      location.href = "http://localhost:3000/";
+      location.href = "http://dongnaecomm.cafe24app.com/";
     });
 
     const goBackBtn = document.querySelector("#go-back-btn");
@@ -155,7 +155,7 @@
           return;
         }
 
-        const res = await fetch("http://localhost:3000/api/post", {
+        const res = await fetch("http://dongnaecomm.cafe24app.com/api/post", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

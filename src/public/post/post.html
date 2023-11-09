@@ -88,11 +88,11 @@
     const title = document.querySelector("#title");
 
     logo.addEventListener("click", () => {
-      location.href = "http://localhost:3000/";
+      location.href = "http://dongnaecomm.cafe24app.com/";
     });
 
     title.addEventListener("click", () => {
-      location.href = "http://localhost:3000/";
+      location.href = "http://dongnaecomm.cafe24app.com/";
     });
 
     const myInfoBtn = document.getElementById("my-info-btn");
@@ -135,13 +135,16 @@
         }
         const area = new URLSearchParams(window.location.search).get("area");
         const email = localStorage.getItem("id");
-        const response = await fetch(`http://localhost:3000/api/user/address`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        });
+        const response = await fetch(
+          `http://dongnaecomm.cafe24app.com/api/user/address`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email }),
+          }
+        );
 
         const data = await response.json();
 
@@ -224,7 +227,7 @@
         document.querySelector("#search-selection").value ?? "1";
       const area = new URLSearchParams(window.location.search).get("area");
       const res = await fetch(
-        `http://localhost:3000/api/post/search?keyword=${searchValue}&method=${searchSelection}&category=${category}&area=${area}`
+        `http://dongnaecomm.cafe24app.com/api/post/search?keyword=${searchValue}&method=${searchSelection}&category=${category}&area=${area}`
       );
       const data = await res.json();
       addPostListToContainer(data);
@@ -245,7 +248,7 @@
       curPageNumber.textContent = page;
       const area = new URLSearchParams(window.location.search).get("area");
       const res = await fetch(
-        `http://localhost:3000/api/post/main?page=${page}&category=${category}&area=${area}`
+        `http://dongnaecomm.cafe24app.com/api/post/main?page=${page}&category=${category}&area=${area}`
       );
       const data = await res.json();
       addPostListToContainer(data);
@@ -256,7 +259,7 @@
       const area = new URLSearchParams(window.location.search).get("area");
       // 한페이지당 6개씩 보여주므로 페이지 * 카운트가 총 포스트 수보다 크다면 return
       const count = await fetch(
-        `http://localhost:3000/api/post/count?category=${category}&area=${area}`
+        `http://dongnaecomm.cafe24app.com/api/post/count?category=${category}&area=${area}`
       );
       const countData = await count.json();
       if (page * 6 >= Number(countData)) {
@@ -266,7 +269,7 @@
       page++;
       curPageNumber.textContent = page;
       const res = await fetch(
-        `http://localhost:3000/api/post/main?page=${page}&category=${category}&area=${area}`
+        `http://dongnaecomm.cafe24app.com/api/post/main?page=${page}&category=${category}&area=${area}`
       );
       const data = await res.json();
       addPostListToContainer(data);
@@ -276,7 +279,7 @@
     async function getPost() {
       const area = new URLSearchParams(window.location.search).get("area");
       const res = await fetch(
-        `http://localhost:3000/api/post/main?page=${page}&category=${category}&area=${area}`
+        `http://dongnaecomm.cafe24app.com/api/post/main?page=${page}&category=${category}&area=${area}`
       );
       const data = await res.json();
       addPostListToContainer(data);
